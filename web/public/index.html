@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manage Discord soundboard sounds: upload, preview, copy play commands, and organize favorites." />
+  <title>Sound Board — Discord Bot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0f12;
+      --surface: #18181c;
+      --border: #2a2a30;
+      --text: #e4e4e7;
+      --muted: #71717a;
+      --accent: #a78bfa;
+      --accent-hover: #c4b5fd;
+      --success: #22c55e;
+      --error: #ef4444;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Outfit", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .layout { display: flex; max-width: 1100px; margin: 0 auto; padding: 1.5rem; gap: 1.5rem; min-height: 100vh; }
+    @media (max-width: 900px) { .layout { flex-direction: column; } }
+    .main { flex: 1; min-width: 0; }
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 1.5rem;
+      height: fit-content;
+    }
+    @media (max-width: 900px) { .sidebar { width: 100%; position: static; } }
+    .container { padding: 0; }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-row { margin-bottom: 1rem; }
+    .form-row:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+    input[type="text"],
+    input[type="url"],
+    input[type="file"] {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+    }
+    input[type="url"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
+    }
+    input[type="file"] {
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+    input[type="file"]::file-selector-button {
+      font-family: "Outfit", sans-serif;
+      padding: 0.4rem 0.8rem;
+      margin-right: 0.75rem;
+      background: var(--border);
+      border: none;
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn {
+      font-family: "Outfit", sans-serif;
+      font-weight: 600;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0f0f12;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(167, 139, 250, 0.1); border-color: var(--accent); }
+    .btn-copy {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8rem;
+      padding: 0.5rem 0.85rem;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-copy:hover { background: var(--accent); color: #0f0f12; }
+    .btn-copy.copied { background: var(--success); color: #0f0f12; }
+    .validation {
+      font-size: 0.8rem;
+      margin-top: 0.35rem;
+    }
+    .validation.error { color: var(--error); }
+    .validation.success { color: var(--success); }
+    .search-wrap { margin-bottom: 1rem; }
+    .sound-list { list-style: none; }
+    .sound-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9rem;
+    }
+    .sound-item:last-child { border-bottom: none; }
+    .sound-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sound-command { color: var(--muted); font-size: 0.8rem; margin-left: 0.5rem; }
+    .sound-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .btn-fav {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0.25rem;
+      line-height: 1;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .btn-fav:hover { color: var(--accent); }
+    .btn-fav.is-fav { color: #fbbf24; }
+    .btn-play, .btn-stop {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.6rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: var(--border);
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .btn-play:hover, .btn-stop:hover { background: var(--accent); color: #0f0f12; }
+    .btn-stop { background: var(--accent); color: #0f0f12; }
+    .filter-fav { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.875rem; }
+    .filter-fav input { width: auto; margin: 0; accent-color: var(--accent); }
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 0.75rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--success);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: transform 0.2s, opacity 0.2s;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .empty { color: var(--muted); text-align: center; padding: 2rem; font-size: 0.95rem; }
+    .loading { color: var(--muted); padding: 1rem 0; }
+    .cmd-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .cmd-item:last-child { border-bottom: none; }
+    .cmd-text { flex: 1; font-family: "JetBrains Mono", monospace; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cmd-copy { flex-shrink: 0; padding: 0.35rem 0.6rem; font-size: 0.75rem; }
+    .cmd-copy.copied { background: var(--success); color: #0f0f12; }
+    .cmd-cat { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.75rem; margin-bottom: 0.25rem; }
+    .cmd-cat:first-child { margin-top: 0; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .toolbar label { margin-bottom: 0; }
+    .sort-wrap { display: flex; align-items: center; gap: 0.5rem; }
+    .sort-wrap select {
+      padding: 0.5rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .sound-count { font-size: 0.8rem; color: var(--muted); }
+    .btn-delete { padding: 0.35rem 0.6rem; font-size: 0.75rem; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+    .btn-delete:hover { color: var(--error); border-color: var(--error); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
+    .modal-overlay.show { opacity: 1; visibility: visible; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; max-width: 360px; width: 90%; }
+    .modal h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+    .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .modal-actions .btn { padding: 0.5rem 1rem; font-size: 0.875rem; }
+    .btn-danger { background: var(--error); color: #fff; }
+    .btn-danger:hover { filter: brightness(1.1); }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast.toast-error { border-color: var(--error); }
+  </style>
+</head>
+<body>
+  <div class="layout">
+  <div class="main">
+  <div class="container">
+    <h1>Sound Board</h1>
+    <p class="subtitle">Manage sounds and copy play commands for Discord.</p>
+
+    <section>
+      <h2>Add sound</h2>
+      <p class="subtitle" style="margin-bottom: 1rem; font-size: 0.85rem;">Uploads are compressed to high-quality Opus for smaller size (quality preserved).</p>
+      <form id="formUpload" enctype="multipart/form-data">
+        <div class="form-row">
+          <label for="url">From URL</label>
+          <input type="url" id="url" name="url" placeholder="Direct link to .mp3 / .ogg / .wav file" autocomplete="off" />
+          <p class="validation" style="margin-top:0.35rem; color: var(--muted); font-size: 0.8rem;">Use a direct file link (e.g. ending in .mp3), not a web page.</p>
+          <p id="urlValidation" class="validation" aria-live="polite"></p>
+        </div>
+        <div class="form-row">
+          <label for="file">Or upload file</label>
+          <input type="file" id="file" name="sound" accept=".mp3,.wav,.ogg,.flac,.m4a,audio/mpeg,audio/wav,audio/ogg,audio/flac,audio/mp4" />
+          <p id="fileValidation" class="validation" aria-live="polite"></p>
+        </div>
+        <div class="form-row">
+          <button type="submit" class="btn btn-primary" id="btnSubmit">Add sound</button>
+        </div>
+      </form>
+    </section>
+
+    <section>
+      <h2>All sounds <span class="sound-count" id="soundCount" aria-live="polite"></span></h2>
+      <div class="search-wrap">
+        <label for="search">Search</label>
+        <input type="text" id="search" placeholder="Filter by name..." autocomplete="off" aria-describedby="soundCount" />
+      </div>
+      <div class="toolbar">
+        <div class="filter-fav">
+          <input type="checkbox" id="favOnly" aria-label="Show favorites only" />
+          <label for="favOnly">Favorites only</label>
+        </div>
+        <div class="sort-wrap">
+          <label for="sort">Sort</label>
+          <select id="sort" aria-label="Sort sounds">
+            <option value="az">A → Z</option>
+            <option value="za">Z → A</option>
+            <option value="fav">Favorites first</option>
+          </select>
+        </div>
+      </div>
+      <ul class="sound-list" id="soundList" role="list">
+        <li class="loading" id="loading">Loading…</li>
+      </ul>
+    </section>
+  </div>
+  </div>
+
+  <aside class="sidebar">
+    <section>
+      <h2>Commands</h2>
+      <p class="subtitle" style="margin-bottom: 1rem; font-size: 0.8rem;">Copy and paste in Discord.</p>
+      <div id="commandsList">
+        <span class="loading">Loading commands…</span>
+      </div>
+    </section>
+  </aside>
+  </div>
+
+  <div class="toast" id="toast" aria-live="polite" role="status">Command copied to clipboard.</div>
+
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal">
+      <h3 id="deleteModalTitle">Delete sound?</h3>
+      <p id="deleteModalBody">This will remove the sound from the server. Restart the bot or use <code>!reload</code> in Discord to update.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="deleteModalCancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="deleteModalConfirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("formUpload");
+    const urlInput = document.getElementById("url");
+    const fileInput = document.getElementById("file");
+    const urlValidation = document.getElementById("urlValidation");
+    const fileValidation = document.getElementById("fileValidation");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const soundList = document.getElementById("soundList");
+    const loadingEl = document.getElementById("loading");
+    const searchInput = document.getElementById("search");
+    const toast = document.getElementById("toast");
+    const commandsList = document.getElementById("commandsList");
+    const favOnlyCheckbox = document.getElementById("favOnly");
+    const sortSelect = document.getElementById("sort");
+    const soundCountEl = document.getElementById("soundCount");
+    const deleteModal = document.getElementById("deleteModal");
+    const deleteModalCancel = document.getElementById("deleteModalCancel");
+    const deleteModalConfirm = document.getElementById("deleteModalConfirm");
+
+    const FAV_COOKIE = "soundboard_favorites";
+    const FAV_MAX_AGE_DAYS = 365;
+
+    function getFavorites() {
+      const match = document.cookie.match(new RegExp("(?:^|; )" + FAV_COOKIE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"));
+      if (!match) return [];
+      try {
+        const arr = JSON.parse(decodeURIComponent(match[1]));
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setFavorites(names) {
+      const value = encodeURIComponent(JSON.stringify(names));
+      document.cookie = FAV_COOKIE + "=" + value + "; path=/; max-age=" + (FAV_MAX_AGE_DAYS * 86400) + "; SameSite=Lax";
+    }
+
+    let favoritesSet = new Set(getFavorites());
+    let allSounds = [];
+    let currentPreviewName = null;
+    const previewAudio = new Audio();
+    previewAudio.addEventListener("ended", () => {
+      currentPreviewName = null;
+      updatePlayButtons();
+    });
+
+    function updatePlayButtons() {
+      soundList.querySelectorAll(".btn-play, .btn-stop").forEach((btn) => {
+        const name = btn.getAttribute("data-name");
+        const isStop = btn.classList.contains("btn-stop");
+        if (name === currentPreviewName) {
+          btn.style.display = isStop ? "" : "none";
+        } else {
+          btn.style.display = isStop ? "none" : "";
+        }
+      });
+    }
+
+    function showToast(message, type) {
+      toast.textContent = message || "Command copied to clipboard.";
+      toast.classList.remove("toast-error");
+      if (type === "error") toast.classList.add("toast-error");
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), type === "error" ? 4000 : 2000);
+    }
+
+    function setValidation(el, message, type) {
+      el.textContent = message || "";
+      el.className = "validation " + (type === "error" ? "error" : type === "success" ? "success" : "");
+    }
+
+    function validateUrl() {
+      const v = urlInput.value.trim();
+      if (!v) { setValidation(urlValidation, ""); return true; }
+      try {
+        new URL(v);
+        setValidation(urlValidation, "");
+        return true;
+      } catch {
+        setValidation(urlValidation, "Please enter a valid URL.", "error");
+        return false;
+      }
+    }
+
+    function validateFile() {
+      const f = fileInput.files?.[0];
+      if (!f) { setValidation(fileValidation, ""); return true; }
+      const ext = "." + (f.name || "").split(".").pop()?.toLowerCase();
+      const okExt = [".mp3", ".wav", ".ogg", ".flac", ".m4a"].includes(ext);
+      if (!okExt) {
+        setValidation(fileValidation, "Use .mp3, .wav, .ogg, .flac, or .m4a.", "error");
+        return false;
+      }
+      if (f.size > 15 * 1024 * 1024) {
+        setValidation(fileValidation, "File too large. Max 15MB.", "error");
+        return false;
+      }
+      setValidation(fileValidation, "");
+      return true;
+    }
+
+    urlInput.addEventListener("input", validateUrl);
+    urlInput.addEventListener("blur", validateUrl);
+    fileInput.addEventListener("change", validateFile);
+
+    async function loadSounds() {
+      const loadingStillThere = document.getElementById("loading");
+      if (loadingStillThere) loadingStillThere.remove();
+      try {
+        const res = await fetch("/api/sounds", { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Failed to load");
+        allSounds = data.sounds || [];
+        applySoundFilter();
+      } catch (e) {
+        soundList.innerHTML = '<li class="empty">Could not load sounds. Is the server running?</li>';
+      }
+    }
+
+    function renderSounds(sounds) {
+      if (!sounds.length) {
+        const msg = favOnlyCheckbox.checked
+          ? "No favorites yet. Click ☆ on a sound to add it."
+          : "No sounds yet. Add one above.";
+        soundList.innerHTML = '<li class="empty">' + msg + "</li>";
+        updateSoundCount(0, allSounds.length);
+        return;
+      }
+      soundList.innerHTML = sounds.map(({ name, command }) => {
+        const isFav = favoritesSet.has(name);
+        return `<li class="sound-item" data-name="${escapeAttr(name)}">
+          <span class="sound-name">${escapeHtml(name)}<span class="sound-command">${escapeHtml(command)}</span></span>
+          <div class="sound-actions">
+            <button type="button" class="btn-play" data-name="${escapeAttr(name)}" title="Preview" aria-label="Play preview">Play</button>
+            <button type="button" class="btn-stop" data-name="${escapeAttr(name)}" title="Stop preview" style="display:none" aria-label="Stop preview">Stop</button>
+            <button type="button" class="btn-fav ${isFav ? "is-fav" : ""}" data-name="${escapeAttr(name)}" title="${isFav ? "Remove from favorites" : "Add to favorites"}" aria-label="${isFav ? "Remove from favorites" : "Add to favorites"}">${isFav ? "★" : "☆"}</button>
+            <button type="button" class="btn-copy" data-command="${escapeAttr(command)}" title="Copy command" aria-label="Copy play command">Copy</button>
+            <button type="button" class="btn-delete" data-name="${escapeAttr(name)}" title="Delete sound" aria-label="Delete sound">Delete</button>
+          </div>
+        </li>`;
+      }).join("");
+      soundList.querySelectorAll(".btn-copy").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const cmd = btn.getAttribute("data-command");
+          try {
+            await navigator.clipboard.writeText(cmd);
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            showToast("Command copied to clipboard.");
+            setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1500);
+          } catch {
+            btn.textContent = "Copy failed";
+            setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+          }
+        });
+      });
+      soundList.querySelectorAll(".btn-play").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const name = btn.getAttribute("data-name");
+          previewAudio.pause();
+          previewAudio.currentTime = 0;
+          previewAudio.src = "/api/sounds/" + encodeURIComponent(name) + "/audio";
+          currentPreviewName = name;
+          previewAudio.play().catch(() => { currentPreviewName = null; updatePlayButtons(); });
+          updatePlayButtons();
+        });
+      });
+      soundList.querySelectorAll(".btn-stop").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          previewAudio.pause();
+          previewAudio.currentTime = 0;
+          currentPreviewName = null;
+          updatePlayButtons();
+        });
+      });
+      soundList.querySelectorAll(".btn-fav").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const name = btn.getAttribute("data-name");
+          if (favoritesSet.has(name)) {
+            favoritesSet.delete(name);
+          } else {
+            favoritesSet.add(name);
+          }
+          setFavorites([...favoritesSet]);
+          applySoundFilter();
+        });
+      });
+      soundList.querySelectorAll(".btn-delete").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const name = btn.getAttribute("data-name");
+          openDeleteModal(name);
+        });
+      });
+      updatePlayButtons();
+    }
+
+    function updateSoundCount(visible, total) {
+      const totalCount = total ?? allSounds.length;
+      if (soundCountEl) soundCountEl.textContent = totalCount ? `(${visible ?? totalCount}${favOnlyCheckbox?.checked || searchInput?.value ? " of " + totalCount : ""})` : "";
+    }
+
+    let deletePendingName = null;
+    function openDeleteModal(name) {
+      deletePendingName = name;
+      deleteModal.classList.add("show");
+      document.getElementById("deleteModalBody").innerHTML = "Remove <strong>" + escapeHtml(name) + "</strong> from the server? Use <code>!reload</code> in Discord after deleting.";
+      deleteModalConfirm.focus();
+    }
+    function closeDeleteModal() {
+      deleteModal.classList.remove("show");
+      deletePendingName = null;
+    }
+    deleteModalCancel.addEventListener("click", closeDeleteModal);
+    deleteModalConfirm.addEventListener("click", async () => {
+      if (!deletePendingName) return;
+      const name = deletePendingName;
+      closeDeleteModal();
+      try {
+        const res = await fetch("/api/sounds/" + encodeURIComponent(name), { method: "DELETE" });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Delete failed");
+        favoritesSet.delete(name);
+        setFavorites([...favoritesSet]);
+        showToast('Sound "' + name + '" deleted.');
+        await loadSounds();
+      } catch (e) {
+        showToast(e.message || "Delete failed.", "error");
+      }
+    });
+    deleteModal.addEventListener("click", (e) => { if (e.target === deleteModal) closeDeleteModal(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (deleteModal.classList.contains("show")) closeDeleteModal();
+        else if (currentPreviewName) {
+          previewAudio.pause();
+          previewAudio.currentTime = 0;
+          currentPreviewName = null;
+          updatePlayButtons();
+        }
+      }
+    });
+
+    function applySoundFilter() {
+      const q = searchInput.value.trim().toLowerCase();
+      const favOnly = favOnlyCheckbox.checked;
+      const sortBy = sortSelect?.value || "az";
+      let list = allSounds;
+      if (q) list = list.filter(({ name }) => name.toLowerCase().includes(q));
+      if (favOnly) list = list.filter(({ name }) => favoritesSet.has(name));
+      if (sortBy === "za") list = [...list].sort((a, b) => b.name.localeCompare(a.name, undefined, { sensitivity: "base" }));
+      else if (sortBy === "fav") list = [...list].sort((a, b) => (favoritesSet.has(b.name) ? 1 : 0) - (favoritesSet.has(a.name) ? 1 : 0) || a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+      else list = [...list].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+      renderSounds(list);
+      updateSoundCount(list.length, allSounds.length);
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement("div");
+      div.textContent = s;
+      return div.innerHTML;
+    }
+    function escapeAttr(s) {
+      return escapeHtml(s).replace(/"/g, "&quot;");
+    }
+
+    function renderCommandsList(commands) {
+      if (!commands || !commands.length) {
+        commandsList.innerHTML = '<span class="empty">No commands</span>';
+        return;
+      }
+      const byCat = {};
+      commands.forEach((c) => {
+        if (!byCat[c.category]) byCat[c.category] = [];
+        byCat[c.category].push(c);
+      });
+      const order = ["General", "Voice"];
+      let html = "";
+      order.forEach((cat) => {
+        if (!byCat[cat]) return;
+        html += '<div class="cmd-cat">' + escapeHtml(cat) + "</div>";
+        byCat[cat].forEach((c) => {
+          html += `<div class="cmd-item">
+            <span class="cmd-text" title="${escapeAttr(c.command)}">${escapeHtml(c.command)}</span>
+            <button type="button" class="btn-copy cmd-copy" data-command="${escapeAttr(c.command)}" title="Copy">Copy</button>
+          </div>`;
+        });
+      });
+      commandsList.innerHTML = html;
+      commandsList.querySelectorAll(".cmd-copy").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const cmd = btn.getAttribute("data-command");
+          try {
+            await navigator.clipboard.writeText(cmd);
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            showToast("Command copied to clipboard.");
+            setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1500);
+          } catch {
+            btn.textContent = "Copy";
+          }
+        });
+      });
+    }
+
+    async function loadCommands() {
+      const prefix = "!";
+      const fallbackCommands = [
+        { name: "help", usage: "[command]", category: "General", command: prefix + "help [command]" },
+        { name: "ping", usage: "", category: "General", command: prefix + "ping" },
+        { name: "stats", usage: "", category: "General", command: prefix + "stats" },
+        { name: "prefix", usage: "", category: "General", command: prefix + "prefix" },
+        { name: "reload", usage: "", category: "General", command: prefix + "reload" },
+        { name: "join", usage: "", category: "Voice", command: prefix + "join" },
+        { name: "leave", usage: "", category: "Voice", command: prefix + "leave" },
+        { name: "play", usage: "<sound>", category: "Voice", command: prefix + "play <sound>" },
+        { name: "add", usage: "<sound>", category: "Voice", command: prefix + "add <sound>" },
+        { name: "stop", usage: "", category: "Voice", command: prefix + "stop" },
+        { name: "skip", usage: "", category: "Voice", command: prefix + "skip" },
+        { name: "queue", usage: "", category: "Voice", command: prefix + "queue" },
+        { name: "volume", usage: "[0-200]", category: "Voice", command: prefix + "volume [0-200]" },
+        { name: "loop", usage: "", category: "Voice", command: prefix + "loop" },
+        { name: "loopqueue", usage: "", category: "Voice", command: prefix + "loopqueue" },
+        { name: "nowplaying", usage: "", category: "Voice", command: prefix + "nowplaying" },
+        { name: "shuffle", usage: "", category: "Voice", command: prefix + "shuffle" },
+        { name: "library", usage: "", category: "Voice", command: prefix + "library" },
+      ];
+      try {
+        const res = await fetch("/api/commands");
+        const data = await res.json();
+        if (data.ok && data.commands && data.commands.length) {
+          renderCommandsList(data.commands);
+          return;
+        }
+      } catch (e) {
+        console.warn("Commands API failed, using fallback:", e);
+      }
+      renderCommandsList(fallbackCommands);
+    }
+
+    searchInput.addEventListener("input", applySoundFilter);
+    favOnlyCheckbox.addEventListener("change", applySoundFilter);
+    sortSelect.addEventListener("change", applySoundFilter);
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setValidation(urlValidation, "");
+      setValidation(fileValidation, "");
+      const urlVal = urlInput.value.trim();
+      const fileVal = fileInput.files?.[0];
+
+      if (urlVal && fileVal) {
+        setValidation(urlValidation, "Use either URL or file, not both.", "error");
+        return;
+      }
+      if (!urlVal && !fileVal) {
+        setValidation(urlValidation, "Enter a URL or choose a file.", "error");
+        return;
+      }
+      if (urlVal && !validateUrl()) return;
+      if (fileVal && !validateFile()) return;
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Adding…";
+
+      try {
+        if (urlVal) {
+          const res = await fetch("/api/upload/url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: urlVal }),
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || "Upload failed");
+          setValidation(urlValidation, "Added: " + data.name + ". Restart the bot to use in Discord.", "success");
+          urlInput.value = "";
+        } else {
+          const fd = new FormData(form);
+          const res = await fetch("/api/upload", { method: "POST", body: fd });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || "Upload failed");
+          setValidation(fileValidation, "Added: " + data.name + ". Restart the bot to use in Discord.", "success");
+          fileInput.value = "";
+        }
+        await new Promise((r) => setTimeout(r, 150));
+        await loadSounds();
+      } catch (err) {
+        setValidation(urlVal ? urlValidation : fileValidation, err.message || "Upload failed.", "error");
+        showToast(err.message || "Upload failed.", "error");
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Add sound";
+      }
+    });
+
+    loadSounds();
+    loadCommands();
+  </script>
+</body>
+</html>
