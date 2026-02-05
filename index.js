@@ -1,6 +1,3 @@
-const path = require("path");
-app.use("/", require("express").static(path.join(__dirname, "web/public")));
-
 const fs = require("fs");
 const path = require("path");
 const { Client, GatewayIntentBits, ActivityType } = require("discord.js");

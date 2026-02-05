@@ -3,7 +3,7 @@
 
 # ----- EDIT THESE -----
 KEY_PATH="D:/teamspeak-server/teamspeak-key.pem"
-EC2_HOST="ec2-user@43.205.113.19"
+EC2_HOST="ubuntu@43.205.113.19"
 REMOTE_DIR="~/discord-bot"
 # ---------------------
 
