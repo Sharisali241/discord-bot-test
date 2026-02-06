@@ -1,5 +1,25 @@
 const path = require("path");
 const fs = require("fs");
+const config = require("../config");
+
+function recordPlayCount(soundName) {
+  if (!soundName || !config.dataDir) return;
+  const filePath = path.join(config.dataDir, "playcount.json");
+  setImmediate(() => {
+    try {
+      fs.mkdirSync(config.dataDir, { recursive: true });
+      let data = {};
+      if (fs.existsSync(filePath)) {
+        try {
+          data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+        } catch (_) {}
+      }
+      data[soundName] = (data[soundName] || 0) + 1;
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 0));
+    } catch (_) {}
+  });
+}
+
 const {
   joinVoiceChannel,
   createAudioPlayer,
@@ -7,7 +27,6 @@ const {
   AudioPlayerStatus,
   getVoiceConnection,
 } = require("@discordjs/voice");
-const config = require("../config");
 
 const SOUND_EXTENSIONS = [".mp3", ".wav", ".ogg", ".flac", ".m4a"];
 
@@ -22,7 +41,26 @@ class GuildVoiceState {
     this.volume = config.defaultVolume;
     this.currentTrack = null;
     this.sounds = {};
+    this.aliases = {};
     this._loadSounds();
+    this._loadAliases();
+  }
+
+  _loadAliases() {
+    const aliasesPath = path.join(config.soundFolder, "aliases.json");
+    this.aliases = {};
+    try {
+      if (fs.existsSync(aliasesPath)) {
+        const data = JSON.parse(fs.readFileSync(aliasesPath, "utf8"));
+        if (data && typeof data === "object") {
+          Object.entries(data).forEach(([alias, realName]) => {
+            if (alias && realName && typeof realName === "string") {
+              this.aliases[this._normalize(alias)] = realName.trim();
+            }
+          });
+        }
+      }
+    } catch (_) {}
   }
 
   _loadSounds() {
@@ -46,9 +84,10 @@ class GuildVoiceState {
     if (!name || typeof name !== "string") return null;
     const want = name.trim();
     const wantNorm = this._normalize(want);
-    let key = Object.keys(this.sounds).find((k) => k.toLowerCase() === want.toLowerCase());
+    const resolvedName = this.aliases[wantNorm] || want;
+    let key = Object.keys(this.sounds).find((k) => k.toLowerCase() === resolvedName.toLowerCase());
     if (!key && wantNorm) {
-      key = Object.keys(this.sounds).find((k) => this._normalize(k) === wantNorm);
+      key = Object.keys(this.sounds).find((k) => this._normalize(k) === this._normalize(resolvedName));
     }
     return key ? { name: key, path: this.sounds[key] } : null;
   }
@@ -57,10 +96,11 @@ class GuildVoiceState {
     return Object.keys(this.sounds);
   }
 
-  /** Reload sound list from disk (call after adding/removing files). */
+  /** Reload sound list and aliases from disk (call after adding/removing files). */
   reloadSounds() {
     this.sounds = {};
     this._loadSounds();
+    this._loadAliases();
   }
 
   join(channel) {
@@ -122,6 +162,7 @@ class GuildVoiceState {
       if (resource.volume) resource.volume.setVolume(this.volume);
       this.currentTrack = displayName ? { path: filePath, name: displayName } : { path: filePath, name: path.basename(filePath, path.extname(filePath)) };
       this.player.play(resource);
+      recordPlayCount(this.currentTrack.name);
     } catch (err) {
       const message = err?.message || String(err);
       throw new Error(`Playback failed (${path.basename(filePath)}): ${message}`);
@@ -155,6 +196,39 @@ class GuildVoiceState {
     if (!this.player) return false;
     this.player.stop();
     return true;
+  }
+
+  pause() {
+    if (!this.player) return false;
+    return this.player.pause();
+  }
+
+  unpause() {
+    if (!this.player) return false;
+    return this.player.unpause();
+  }
+
+  isPaused() {
+    return this.player?.state?.status === AudioPlayerStatus.Paused;
+  }
+
+  removeFromQueue(index) {
+    const i = parseInt(index, 10);
+    if (isNaN(i) || i < 1 || i > this.queue.length) return { ok: false, error: "invalid_index" };
+    const removed = this.queue.splice(i - 1, 1)[0];
+    return { ok: true, name: removed?.name };
+  }
+
+  moveInQueue(from, to) {
+    const f = parseInt(from, 10);
+    const t = parseInt(to, 10);
+    if (isNaN(f) || isNaN(t) || f < 1 || t < 1 || f > this.queue.length || t > this.queue.length) {
+      return { ok: false, error: "invalid_index" };
+    }
+    if (f === t) return { ok: true, name: this.queue[f - 1]?.name };
+    const item = this.queue.splice(f - 1, 1)[0];
+    this.queue.splice(t - 1, 0, item);
+    return { ok: true, name: item?.name };
   }
 
   stop() {

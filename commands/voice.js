@@ -1,6 +1,9 @@
 const { getGuildState } = require("../utils/voiceManager");
 const config = require("../config");
 
+const cooldownMap = new Map();
+const COOLDOWN_CLEANUP = 60000;
+
 function requireVoice(msg) {
   const channel = msg.member?.voice?.channel;
   if (!channel) {
@@ -8,6 +11,31 @@ function requireVoice(msg) {
     return null;
   }
   return channel;
+}
+
+function requireDJ(msg) {
+  if (!config.djRoleName) return true;
+  const hasRole = msg.member?.roles?.cache?.some((r) => r.name.toLowerCase() === config.djRoleName.toLowerCase());
+  if (!hasRole) {
+    msg.reply(`Only users with the **${config.djRoleName}** role can use this.`).catch(() => {});
+    return false;
+  }
+  return true;
+}
+
+function checkCooldown(msg, key = "play") {
+  if (!config.cooldownMs || config.cooldownMs <= 0) return true;
+  const id = `${msg.guild?.id ?? "dm"}-${msg.author.id}-${key}`;
+  const now = Date.now();
+  const last = cooldownMap.get(id);
+  if (last != null && now - last < config.cooldownMs) {
+    const sec = Math.ceil((config.cooldownMs - (now - last)) / 1000);
+    msg.reply(`Cooldown: wait **${sec}s** before using that again.`).catch(() => {});
+    return false;
+  }
+  cooldownMap.set(id, now);
+  setTimeout(() => cooldownMap.delete(id), config.cooldownMs + COOLDOWN_CLEANUP);
+  return true;
 }
 
 const voiceCommands = [
@@ -47,6 +75,7 @@ const voiceCommands = [
         return msg.reply(`Usage: \`${config.prefix}play <sound name>\`. Use \`${config.prefix}library\` for the list.`);
       }
       if (!msg.guild) return msg.reply("This command only works in a server.");
+      if (!checkCooldown(msg, "play")) return;
       const channel = requireVoice(msg);
       if (!channel) return;
       const state = getGuildState(msg.guild.id);
@@ -79,6 +108,7 @@ const voiceCommands = [
       if (!soundName) {
         return msg.reply(`Usage: \`${config.prefix}add <sound name>\`.`);
       }
+      if (!checkCooldown(msg, "add")) return;
       const channel = requireVoice(msg);
       if (!channel) return;
       const state = getGuildState(msg.guild.id);
@@ -100,6 +130,7 @@ const voiceCommands = [
     description: "Stop playback and clear the queue",
     category: "Voice",
     execute(msg) {
+      if (!requireDJ(msg)) return;
       const state = getGuildState(msg.guild.id);
       state.stop();
       msg.reply("Stopped and cleared the queue.");
@@ -111,10 +142,98 @@ const voiceCommands = [
     description: "Skip the current sound",
     category: "Voice",
     execute(msg) {
+      if (!requireDJ(msg)) return;
       const state = getGuildState(msg.guild.id);
       if (!state.player) return msg.reply("Nothing is playing.");
       state.skip();
       msg.reply("Skipped.");
+    },
+  },
+  {
+    name: "pause",
+    aliases: [],
+    description: "Pause the current sound",
+    category: "Voice",
+    execute(msg) {
+      if (!requireDJ(msg)) return;
+      const state = getGuildState(msg.guild.id);
+      if (!state.player) return msg.reply("Nothing is playing.");
+      if (state.isPaused()) return msg.reply("Already paused.");
+      state.pause();
+      msg.reply("Paused.");
+    },
+  },
+  {
+    name: "resume",
+    aliases: ["unpause"],
+    description: "Resume paused playback",
+    category: "Voice",
+    execute(msg) {
+      if (!requireDJ(msg)) return;
+      const state = getGuildState(msg.guild.id);
+      if (!state.player) return msg.reply("Nothing is playing.");
+      if (!state.isPaused()) return msg.reply("Not paused.");
+      state.unpause();
+      msg.reply("Resumed.");
+    },
+  },
+  {
+    name: "remove",
+    aliases: ["rm", "removefromqueue"],
+    description: "Remove a track from the queue by position",
+    usage: "<position>",
+    category: "Voice",
+    execute(msg, args) {
+      if (!requireDJ(msg)) return;
+      const state = getGuildState(msg.guild.id);
+      const result = state.removeFromQueue(args[0]);
+      if (!result.ok) {
+        if (result.error === "invalid_index") {
+          return msg.reply(`Usage: \`${config.prefix}remove <1-${state.getQueue().length}>\`. Queue has ${state.getQueue().length} item(s).`);
+        }
+        return msg.reply("Could not remove.");
+      }
+      msg.reply(`Removed **${result.name}** from the queue.`);
+    },
+  },
+  {
+    name: "move",
+    aliases: ["mv", "reorder"],
+    description: "Move a track in the queue (e.g. move 3 to 1)",
+    usage: "<from> <to>",
+    category: "Voice",
+    execute(msg, args) {
+      if (!requireDJ(msg)) return;
+      const state = getGuildState(msg.guild.id);
+      const result = state.moveInQueue(args[0], args[1]);
+      if (!result.ok) {
+        const len = state.getQueue().length;
+        return msg.reply(`Usage: \`${config.prefix}move <from> <to>\` (both 1-${len}).`);
+      }
+      msg.reply(`Moved **${result.name}** to position ${args[1]}.`);
+    },
+  },
+  {
+    name: "random",
+    aliases: ["rand", "r"],
+    description: "Play a random sound from the library",
+    category: "Voice",
+    async execute(msg, args) {
+      if (!msg.guild) return msg.reply("This command only works in a server.");
+      if (!checkCooldown(msg, "random")) return;
+      const channel = requireVoice(msg);
+      if (!channel) return;
+      const state = getGuildState(msg.guild.id);
+      const list = state.getAllSounds();
+      if (list.length === 0) return msg.reply("No sounds in the library.");
+      const name = list[Math.floor(Math.random() * list.length)];
+      if (!state.connection) state.join(channel);
+      const result = state.play(name);
+      if (!result.ok) {
+        if (result.error === "queue_full") return msg.reply("Queue is full.");
+        return msg.reply("Could not play. Try again.");
+      }
+      msg.reply(result.queued ? `Queued random: **${result.name}**.` : `Now playing random: **${result.name}**.`);
     },
   },
   {
@@ -144,6 +263,7 @@ const voiceCommands = [
     usage: "[0-200]",
     category: "Voice",
     execute(msg, args) {
+      if (!requireDJ(msg)) return;
       const state = getGuildState(msg.guild.id);
       const val = args[0];
       if (val === undefined || val === "") {

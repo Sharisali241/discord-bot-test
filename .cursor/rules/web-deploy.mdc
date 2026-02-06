@@ -1,0 +1,9 @@
+# Web dashboard updates
+
+When you edit any file that affects the **website** (e.g. `web/public/index.html`, `web/server.js`, or other files under `web/`), you must **deploy and restart** so the user sees the changes:
+
+1. Run the deploy script: `bash deploy-ec2.sh` (via Git Bash from project root).
+2. Restart the web server on EC2: `pm2 restart discord-bot-web`.
+3. If you changed bot code (`index.js`, `commands/`, etc.), also run: `pm2 restart discord-bot`.
+
+After deploy + restart, the dashboard will **auto-refresh** within about 45 seconds (it polls `/api/health` and reloads when the server restart is detected). You can still tell the user to refresh (Ctrl+Shift+R) if they want to see changes immediately.

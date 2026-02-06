@@ -11,15 +11,49 @@
   <style>
     :root {
       --bg: #0f0f12;
+      --bg-subtle: #141418;
       --surface: #18181c;
+      --surface-hover: #1f1f24;
       --border: #2a2a30;
+      --border-strong: #3f3f46;
       --text: #e4e4e7;
+      --text-muted: #a1a1aa;
       --muted: #71717a;
       --accent: #a78bfa;
       --accent-hover: #c4b5fd;
+      --accent-muted: rgba(167, 139, 250, 0.15);
       --success: #22c55e;
+      --success-muted: rgba(34, 197, 94, 0.2);
       --error: #ef4444;
+      --error-muted: rgba(239, 68, 68, 0.15);
+      --warn: #fbbf24;
       --radius: 10px;
+      --radius-sm: 6px;
+      --radius-lg: 12px;
+      --shadow: 0 4px 12px rgba(0,0,0,0.25);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.15);
+      --transition: 0.2s ease;
+    }
+    body.theme-light {
+      --bg: #f4f4f5;
+      --bg-subtle: #e4e4e7;
+      --surface: #fff;
+      --surface-hover: #fafafa;
+      --border: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text: #18181b;
+      --text-muted: #52525b;
+      --muted: #71717a;
+      --accent: #7c3aed;
+      --accent-hover: #6d28d9;
+      --accent-muted: rgba(124, 58, 237, 0.12);
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    body.theme-light input[type="text"], body.theme-light input[type="url"], body.theme-light input[type="file"] {
+      background: #fff;
+      border-color: var(--border);
+      color: var(--text);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -29,241 +63,477 @@
       min-height: 100vh;
       line-height: 1.5;
     }
-    .layout { display: flex; max-width: 1100px; margin: 0 auto; padding: 1.5rem; gap: 1.5rem; min-height: 100vh; }
+    .layout { display: flex; max-width: 1140px; margin: 0 auto; padding: 1.5rem; gap: 1.5rem; min-height: 100vh; }
     @media (max-width: 900px) { .layout { flex-direction: column; } }
     .main { flex: 1; min-width: 0; }
-    .sidebar {
-      width: 280px;
-      flex-shrink: 0;
-      position: sticky;
-      top: 1.5rem;
-      height: fit-content;
-    }
+    .sidebar { width: 300px; flex-shrink: 0; position: sticky; top: 1.5rem; height: fit-content; }
     @media (max-width: 900px) { .sidebar { width: 100%; position: static; } }
     .container { padding: 0; }
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.02em;
-    }
+    h1 { font-size: 1.85rem; font-weight: 700; margin-bottom: 0.35rem; letter-spacing: -0.02em; }
     .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
     section {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-lg);
       padding: 1.5rem;
       margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--transition);
     }
+    section:hover { box-shadow: var(--shadow); }
     section h2 {
-      font-size: 1rem;
+      font-size: 0.8rem;
       font-weight: 600;
       margin-bottom: 1rem;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
     }
-    .form-row { margin-bottom: 1rem; }
+    .form-row { margin-bottom: 1.25rem; }
     .form-row:last-child { margin-bottom: 0; }
-    label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-      color: var(--text);
-    }
-    input[type="text"],
-    input[type="url"],
-    input[type="file"] {
+    label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
+    input[type="text"], input[type="url"], input[type="file"] {
       width: 100%;
-      padding: 0.65rem 0.9rem;
+      padding: 0.7rem 1rem;
       font-family: "JetBrains Mono", monospace;
       font-size: 0.9rem;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius);
       color: var(--text);
+      transition: border-color var(--transition), box-shadow var(--transition);
     }
-    input[type="url"]:focus,
-    input[type="text"]:focus {
+    input[type="text"]:hover, input[type="url"]:hover { border-color: var(--border-strong); }
+    input[type="url"]:focus, input[type="text"]:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
+      box-shadow: 0 0 0 3px var(--accent-muted);
     }
-    input[type="file"] {
-      padding: 0.5rem;
-      cursor: pointer;
-    }
+    input[type="file"] { padding: 0.5rem; cursor: pointer; }
     input[type="file"]::file-selector-button {
       font-family: "Outfit", sans-serif;
-      padding: 0.4rem 0.8rem;
+      padding: 0.45rem 0.9rem;
       margin-right: 0.75rem;
       background: var(--border);
       border: none;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       color: var(--text);
       cursor: pointer;
       font-weight: 600;
+      transition: background var(--transition);
     }
+    input[type="file"]::file-selector-button:hover { background: var(--border-strong); }
+
+    /* ---- Buttons: base ---- */
     .btn {
       font-family: "Outfit", sans-serif;
       font-weight: 600;
-      padding: 0.65rem 1.25rem;
-      border-radius: 8px;
+      padding: 0.65rem 1.35rem;
+      border-radius: var(--radius);
       border: none;
       cursor: pointer;
       font-size: 0.9rem;
-      transition: background 0.15s, transform 0.1s;
+      transition: background var(--transition), color var(--transition), transform 0.1s, box-shadow var(--transition);
     }
+    .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-muted); }
+    .btn:active { transform: scale(0.98); }
     .btn-primary {
-      background: var(--accent);
-      color: #0f0f12;
+      background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(167, 139, 250, 0.35);
     }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:hover { background: linear-gradient(135deg, var(--accent-hover) 0%, #a78bfa 100%); box-shadow: 0 4px 12px rgba(167, 139, 250, 0.4); }
     .btn-ghost {
       background: transparent;
       color: var(--accent);
       border: 1px solid var(--border);
     }
-    .btn-ghost:hover { background: rgba(167, 139, 250, 0.1); border-color: var(--accent); }
-    .btn-copy {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.8rem;
-      padding: 0.5rem 0.85rem;
-      background: var(--border);
-      color: var(--text);
-      border: none;
-      border-radius: 6px;
+    .btn-ghost:hover { background: var(--accent-muted); border-color: var(--accent); color: var(--accent-hover); }
+
+    /* ---- Theme toggle (same as btn btn-ghost, with position) ---- */
+    .theme-toggle {
+      position: absolute;
+      top: 1.5rem;
+      right: 0;
+      padding: 0.65rem 1.35rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--accent);
       cursor: pointer;
-      transition: background 0.15s;
-      white-space: nowrap;
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
     }
-    .btn-copy:hover { background: var(--accent); color: #0f0f12; }
-    .btn-copy.copied { background: var(--success); color: #0f0f12; }
-    .validation {
-      font-size: 0.8rem;
-      margin-top: 0.35rem;
-    }
-    .validation.error { color: var(--error); }
-    .validation.success { color: var(--success); }
-    .search-wrap { margin-bottom: 1rem; }
+    .theme-toggle:hover { background: var(--accent-muted); border-color: var(--accent); color: var(--accent-hover); }
+    .theme-toggle:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-muted); }
+
+    /* ---- Sound list & row actions ---- */
     .sound-list { list-style: none; }
     .sound-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 0.75rem 0;
+      padding: 0.85rem 0;
       border-bottom: 1px solid var(--border);
       font-family: "JetBrains Mono", monospace;
       font-size: 0.9rem;
+      transition: background var(--transition);
     }
+    .sound-item:hover { background: var(--surface-hover); }
     .sound-item:last-child { border-bottom: none; }
-    .sound-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sound-item:first-child { padding-top: 0; }
+    .sound-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .sound-command { color: var(--muted); font-size: 0.8rem; margin-left: 0.5rem; }
-    .sound-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .sound-actions { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; flex-wrap: wrap; }
+    .sound-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
+    .sound-tag { font-size: 0.7rem; padding: 0.2rem 0.5rem; background: var(--accent-muted); border-radius: 999px; color: var(--accent); font-weight: 500; }
+    .sound-playcount { font-size: 0.75rem; color: var(--muted); margin-left: 0.5rem; }
+    .sound-item .bulk-check {
+      width: 1.1rem; height: 1.1rem;
+      margin-right: 0.6rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ---- Action buttons (Play, Copy, Rename, Tags, Delete) - same design as .btn-sm ---- */
+    .btn-play, .btn-stop, .btn-copy, .btn-rename, .btn-tags, .btn-delete {
+      font-family: "Outfit", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+      white-space: nowrap;
+    }
+    .btn-play, .btn-stop {
+      background: var(--border);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-play:hover, .btn-stop:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-stop { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-copy, .btn-rename, .btn-tags {
+      background: var(--surface);
+      color: var(--text);
+    }
+    .btn-copy:hover, .btn-rename:hover, .btn-tags:hover { background: var(--surface-hover); border-color: var(--accent); color: var(--accent); }
+    .btn-copy.copied, .cmd-copy.copied { background: var(--success); color: #fff; border-color: var(--success); }
+    .btn-delete {
+      background: transparent;
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+    .btn-delete:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
     .btn-fav {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.1rem;
-      padding: 0.25rem;
+      font-size: 1.2rem;
+      padding: 0.2rem 0.35rem;
       line-height: 1;
       color: var(--muted);
-      transition: color 0.15s;
+      transition: color var(--transition), transform 0.15s;
     }
-    .btn-fav:hover { color: var(--accent); }
-    .btn-fav.is-fav { color: #fbbf24; }
-    .btn-play, .btn-stop {
-      font-size: 0.75rem;
-      padding: 0.35rem 0.6rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: var(--border);
+    .btn-fav:hover { color: var(--warn); transform: scale(1.1); }
+    .btn-fav.is-fav { color: var(--warn); }
+
+    /* ---- Toolbar ---- */
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .toolbar label { margin-bottom: 0; }
+    .filter-fav { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
+    .filter-fav input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: var(--accent); cursor: pointer; }
+    .sort-wrap select {
+      padding: 0.5rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
       color: var(--text);
-      transition: background 0.15s;
+      cursor: pointer;
+      transition: border-color var(--transition);
     }
-    .btn-play:hover, .btn-stop:hover { background: var(--accent); color: #0f0f12; }
-    .btn-stop { background: var(--accent); color: #0f0f12; }
-    .filter-fav { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.875rem; }
-    .filter-fav input { width: auto; margin: 0; accent-color: var(--accent); }
+    .sort-wrap select:hover { border-color: var(--border-strong); }
+    .sort-wrap select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-muted); }
+    #bulkDeleteBtn { margin-left: auto; }
+    .sound-count { font-size: 0.8rem; color: var(--muted); }
+
+    /* ---- Validation, toast, empty, loading ---- */
+    .validation { font-size: 0.8rem; margin-top: 0.35rem; }
+    .validation.error { color: var(--error); }
+    .validation.success { color: var(--success); }
+    .search-wrap { margin-bottom: 1rem; }
+    .empty { color: var(--muted); text-align: center; padding: 2rem; font-size: 0.95rem; }
+    .loading { color: var(--muted); padding: 1rem 0; }
     .toast {
       position: fixed;
       bottom: 1.5rem;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      padding: 0.75rem 1.25rem;
+      padding: 0.85rem 1.5rem;
       background: var(--surface);
       border: 1px solid var(--success);
-      border-radius: 8px;
+      border-radius: var(--radius);
       font-size: 0.9rem;
+      font-weight: 500;
       opacity: 0;
-      transition: transform 0.2s, opacity 0.2s;
+      transition: transform 0.25s ease, opacity 0.25s ease;
       z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: var(--shadow);
     }
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-    .empty { color: var(--muted); text-align: center; padding: 2rem; font-size: 0.95rem; }
-    .loading { color: var(--muted); padding: 1rem 0; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.toast-error { border-color: var(--error); }
+
+    /* ---- Commands sidebar ---- */
     .cmd-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0;
+      gap: 0.6rem;
+      padding: 0.55rem 0;
       border-bottom: 1px solid var(--border);
       font-size: 0.85rem;
     }
     .cmd-item:last-child { border-bottom: none; }
-    .cmd-text { flex: 1; font-family: "JetBrains Mono", monospace; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .cmd-copy { flex-shrink: 0; padding: 0.35rem 0.6rem; font-size: 0.75rem; }
-    .cmd-copy.copied { background: var(--success); color: #0f0f12; }
-    .cmd-cat { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.75rem; margin-bottom: 0.25rem; }
-    .cmd-cat:first-child { margin-top: 0; }
-    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-    .toolbar label { margin-bottom: 0; }
-    .sort-wrap { display: flex; align-items: center; gap: 0.5rem; }
-    .sort-wrap select {
-      padding: 0.5rem 0.75rem;
-      font-family: inherit;
-      font-size: 0.875rem;
-      background: var(--bg);
+    .cmd-text { flex: 1; font-family: "JetBrains Mono", monospace; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); }
+    .cmd-copy {
+      flex-shrink: 0;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--surface-hover);
+      color: var(--text-muted);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
+      border-radius: var(--radius-sm);
       cursor: pointer;
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
     }
-    .sound-count { font-size: 0.8rem; color: var(--muted); }
-    .btn-delete { padding: 0.35rem 0.6rem; font-size: 0.75rem; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.15s; }
-    .btn-delete:hover { color: var(--error); border-color: var(--error); }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
+    .cmd-copy:hover { background: var(--accent-muted); color: var(--accent); border-color: var(--accent); }
+    .cmd-cat { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.85rem; margin-bottom: 0.3rem; }
+    .cmd-cat:first-child { margin-top: 0; }
+
+    /* ---- Stats & QR ---- */
+    .stats-list { font-size: 0.9rem; }
+    .stats-list li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background var(--transition);
+    }
+    .stats-list li:hover { background: var(--surface-hover); }
+    .stats-list li:last-child { border-bottom: none; }
+    .qr-wrap {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-top: 0.5rem;
+    }
+    .qr-wrap img { max-width: 140px; height: auto; border-radius: var(--radius-sm); }
+
+    /* ---- Modals ---- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
     .modal-overlay.show { opacity: 1; visibility: visible; }
-    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; max-width: 360px; width: 90%; }
-    .modal h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
-    .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      max-width: 380px;
+      width: 90%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
+    body.theme-light .modal { box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .modal h3 { margin-bottom: 0.5rem; font-size: 1.15rem; }
+    .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; }
     .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
-    .modal-actions .btn { padding: 0.5rem 1rem; font-size: 0.875rem; }
-    .btn-danger { background: var(--error); color: #fff; }
-    .btn-danger:hover { filter: brightness(1.1); }
+    .modal-actions .btn { padding: 0.55rem 1.1rem; font-size: 0.875rem; }
+    .btn-danger { background: var(--error); color: #fff; border: none; }
+    .btn-danger:hover { background: #dc2626; }
+    .modal input[type="text"] { margin-bottom: 1rem; }
+
+    /* ---- Copy fallback popover ---- */
+    .copy-fallback { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 300; }
+    .copy-fallback-inner { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; max-width: 420px; width: 90%; box-shadow: var(--shadow); }
+    .copy-fallback-inner label { display: block; font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--muted); }
+    .copy-fallback-inner input { width: 100%; padding: 0.65rem; font-family: JetBrains Mono, monospace; font-size: 0.9rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); margin-bottom: 0.75rem; }
+    .copy-fallback-inner .copy-fallback-select { padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; transition: background var(--transition); }
+    .copy-fallback-inner .copy-fallback-select:hover { background: var(--accent-hover); }
     .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .toast.toast-error { border-color: var(--error); }
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding: 0.25rem 0 0;
+      border-bottom: 2px solid var(--border);
+      min-height: 48px;
+      align-items: flex-end;
+    }
+    .nav-tabs a {
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: var(--radius) var(--radius) 0 0;
+      transition: color var(--transition), background var(--transition), border-color var(--transition);
+      border: 1px solid transparent;
+      border-bottom: none;
+      margin-bottom: -2px;
+      background: transparent;
+    }
+    .nav-tabs a:hover { color: var(--text); background: var(--surface-hover); }
+    .nav-tabs a.active {
+      color: var(--accent);
+      background: var(--surface);
+      border-color: var(--border);
+      border-bottom: 2px solid var(--surface);
+      padding-bottom: calc(0.75rem + 2px);
+    }
+    .page { display: none; }
+    .page.active { display: block; }
+    .server-header { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .server-header label { margin-bottom: 0; }
+    .server-header select { min-width: 220px; padding: 0.6rem 1rem; font-size: 0.95rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); cursor: pointer; }
+    .channel-list, .member-list { list-style: none; }
+    .channel-item, .member-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .channel-item:last-child, .member-item:last-child { border-bottom: none; }
+    .channel-category-header { list-style: none; padding: 0.5rem 0 0.25rem; margin-top: 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+    .channel-category-header:first-child { margin-top: 0; padding-top: 0; }
+    .channel-type { font-size: 0.75rem; padding: 0.2rem 0.5rem; background: var(--accent-muted); color: var(--accent); border-radius: 4px; font-weight: 600; }
+    .member-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+    .member-roles { font-size: 0.8rem; color: var(--muted); }
+    .member-roles span { margin-right: 0.35rem; }
+    .guild-icon { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+    .channel-item .btn-wrap, .role-item .btn-wrap, .member-item .btn-wrap { margin-left: auto; display: flex; gap: 0.35rem; flex-shrink: 0; }
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+    }
+    .btn-sm:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+    .btn-sm.danger { border-color: var(--danger); color: var(--danger); background: transparent; }
+    .btn-sm.danger:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .role-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.25rem; margin-bottom: 0.2rem; }
+    .role-list { list-style: none; }
+    .role-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .role-item:last-child { border-bottom: none; }
+    .member-roles-select { font-size: 0.8rem; max-width: 12rem; padding: 0.2rem 0.4rem; }
+    .crop-preview-wrap { margin-bottom: 0.5rem; }
+    .crop-preview-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .crop-play-btn {
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .crop-play-btn:hover { background: var(--accent-muted); border-color: var(--accent); color: var(--accent); }
+    .crop-stop-btn { font-size: 0.75rem; }
+    .crop-time { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .crop-waveform-wrap {
+      position: relative;
+      height: 100px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: ew-resize;
+    }
+    .crop-waveform-canvas { display: block; width: 100%; height: 100%; }
+    .crop-handle {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 4px;
+      background: #fff;
+      cursor: ew-resize;
+      z-index: 2;
+      border-radius: 1px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
+    }
+    .crop-handle:hover { width: 6px; }
+    .crop-selection {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 0; right: 0;
+      background: rgba(139, 92, 246, 0.15);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .crop-playhead {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 3px;
+      background: #3b82f6;
+      pointer-events: none;
+      z-index: 2;
+      left: 0;
+      transition: left 0.05s linear;
+    }
+    .add-sound-drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .add-sound-drop-zone.drag-over { border-color: var(--accent); background: var(--accent-muted); }
   </style>
 </head>
 <body>
   <div class="layout">
   <div class="main">
-  <div class="container">
-    <h1>Sound Board</h1>
-    <p class="subtitle">Manage sounds and copy play commands for Discord.</p>
+  <div class="container" style="position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem">
+      <div>
+        <h1>Sound Board</h1>
+        <p class="subtitle">Manage sounds and your Discord server.</p>
+      </div>
+      <div style="display:flex; gap:0.5rem; align-items:center">
+        <button type="button" class="theme-toggle" id="refreshBtn" aria-label="Refresh page" title="Refresh">🔄 Refresh</button>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark theme">☀️ Light</button>
+      </div>
+    </div>
+    <nav class="nav-tabs" aria-label="Main">
+      <a href="#" id="navSounds" class="active">Sounds</a>
+      <a href="#" id="navServer">Server & Channels</a>
+    </nav>
 
+    <div id="pageSounds" class="page active">
     <section>
       <h2>Add sound</h2>
-      <p class="subtitle" style="margin-bottom: 1rem; font-size: 0.85rem;">Uploads are compressed to high-quality Opus for smaller size (quality preserved).</p>
+      <p class="subtitle" style="margin-bottom: 1rem; font-size: 0.85rem;">Uploads are compressed to high-quality Opus. Drag and drop an audio file here, or use URL/file below.</p>
+      <div class="add-sound-drop-zone" id="addSoundDropZone">
       <form id="formUpload" enctype="multipart/form-data">
         <div class="form-row">
           <label for="url">From URL</label>
@@ -280,6 +550,7 @@
           <button type="submit" class="btn btn-primary" id="btnSubmit">Add sound</button>
         </div>
       </form>
+      </div>
     </section>
 
     <section>
@@ -301,20 +572,115 @@
             <option value="fav">Favorites first</option>
           </select>
         </div>
+        <button type="button" class="btn btn-ghost" id="bulkDeleteBtn" style="display:none; margin-left: auto;">Delete selected</button>
       </div>
       <ul class="sound-list" id="soundList" role="list">
         <li class="loading" id="loading">Loading…</li>
       </ul>
     </section>
+    </div>
+
+    <div id="pageServer" class="page">
+      <section>
+        <h2>Select server</h2>
+        <div class="server-header">
+          <label for="guildSelect">Server (guild)</label>
+          <select id="guildSelect" aria-label="Select Discord server">
+            <option value="">— Select a server —</option>
+          </select>
+        </div>
+      </section>
+      <section id="createChannelSection" style="display:none">
+        <h2>One-click setup</h2>
+        <p class="subtitle" style="margin-bottom:1rem; font-size:0.85rem">Create the full channel layout: CHATS category + welcome, rules, events, memes, bot-commands, اذكار, and more.</p>
+        <p class="subtitle" style="margin-bottom:0.75rem; font-size:0.8rem; color:var(--muted)">The bot needs <strong>Manage Channels</strong> in this server. If you see "Missing Permissions", <a href="https://discord.com/oauth2/authorize?client_id=1468953274412564510&permissions=2564092790320695&integration_type=0&scope=bot" target="_blank" rel="noopener">re-invite the bot</a> with that permission.</p>
+        <div class="form-row">
+          <button type="button" class="btn btn-primary" id="createDefaultLayoutBtn" style="padding:0.85rem 1.5rem; font-size:1rem">Create default layout</button>
+          <p class="validation" id="createDefaultValidation" style="margin-top:0.5rem"></p>
+        </div>
+        <details style="margin-top:1rem">
+          <summary style="cursor:pointer; color:var(--muted); font-size:0.9rem">Or add one channel manually</summary>
+          <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border)">
+            <div class="form-row">
+              <label for="newChannelEmoji">Emoji (optional)</label>
+              <input type="text" id="newChannelEmoji" placeholder="😂" maxlength="20" style="max-width:6rem" />
+            </div>
+            <div class="form-row">
+              <label for="newChannelName">Name</label>
+              <input type="text" id="newChannelName" placeholder="memes" />
+            </div>
+            <div class="form-row">
+              <label for="newChannelType">Type</label>
+              <select id="newChannelType">
+                <option value="text">Text</option>
+                <option value="voice">Voice</option>
+                <option value="category">Category</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="newChannelParent">Category</label>
+              <select id="newChannelParent"><option value="">— None —</option></select>
+            </div>
+            <div class="form-row">
+              <button type="button" class="btn btn-ghost" id="createChannelBtn">Add channel</button>
+              <p class="validation" id="createChannelValidation" style="margin-top:0.35rem"></p>
+            </div>
+          </div>
+        </details>
+      </section>
+      <section id="serverChannelsSection" style="display:none">
+        <h2>Channels</h2>
+        <p class="subtitle" style="margin-bottom:0.5rem; font-size:0.85rem">Edit name, category, or position; or delete. Bot needs Manage Channels.</p>
+        <p class="subtitle" style="margin-bottom:1rem; font-size:0.8rem; color:var(--muted)">If you get &quot;Permission denied&quot;, re-invite the bot with Manage Channels + Manage Roles, and in Server Settings → Roles drag the bot’s role above the roles you want to edit.</p>
+        <div class="form-row" style="margin-bottom:1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <button type="button" class="btn btn-ghost" id="refreshServerBtn" title="Reload channels, roles, and members">🔄 Refresh</button>
+          <button type="button" class="btn btn-ghost" id="removeDuplicateChannelsBtn" title="Find channels with the same name (and category) and delete duplicates, keeping one per name">Remove duplicate channels</button>
+          <span class="validation" id="removeDuplicatesValidation"></span>
+        </div>
+        <ul class="channel-list" id="channelList"></ul>
+      </section>
+      <section id="serverRolesSection" style="display:none">
+        <h2>Roles</h2>
+        <p class="subtitle" style="margin-bottom:0.5rem; font-size:0.85rem">Create, edit, delete, reorder roles. Assign roles to members below. Bot needs Manage Roles.</p>
+        <p class="subtitle" style="margin-bottom:0.5rem; font-size:0.8rem; color:var(--muted)">If you get &quot;Permission denied&quot;, put the bot’s role above other roles in Server Settings → Roles.</p>
+        <div class="form-row" style="margin-bottom:1rem">
+          <button type="button" class="btn btn-primary" id="createRoleBtn">Create role</button>
+          <span class="validation" id="createRoleValidation"></span>
+        </div>
+        <ul class="role-list" id="roleList"></ul>
+      </section>
+      <section id="serverMembersSection" style="display:none">
+        <h2>Members</h2>
+        <p class="subtitle" style="margin-bottom:1rem; font-size:0.85rem">People in the selected server. Use dropdown to add or remove roles.</p>
+        <ul class="member-list" id="memberList"></ul>
+      </section>
+      <section id="serverLoadingSection">
+        <p class="loading" id="serverLoadingMsg">Select a server above to view channels and members.</p>
+      </section>
+    </div>
   </div>
   </div>
 
   <aside class="sidebar">
     <section>
+      <h2>Most played</h2>
+      <p class="subtitle" style="margin-bottom: 0.5rem; font-size: 0.8rem;">Play count from Discord.</p>
+      <ul class="stats-list" id="statsList">
+        <li class="loading">Loading…</li>
+      </ul>
+    </section>
+    <section>
       <h2>Commands</h2>
       <p class="subtitle" style="margin-bottom: 1rem; font-size: 0.8rem;">Copy and paste in Discord.</p>
       <div id="commandsList">
         <span class="loading">Loading commands…</span>
+      </div>
+    </section>
+    <section>
+      <h2>Open on phone</h2>
+      <p class="subtitle" style="margin-bottom: 0.5rem; font-size: 0.8rem;">Scan to open this dashboard.</p>
+      <div class="qr-wrap">
+        <img id="qrImage" src="" alt="QR code" width="140" height="140" />
       </div>
     </section>
   </aside>
@@ -329,6 +695,132 @@
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" id="deleteModalCancel">Cancel</button>
         <button type="button" class="btn btn-danger" id="deleteModalConfirm">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="renameModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>Rename sound</h3>
+      <p class="subtitle" style="margin-bottom:0.75rem">New name (letters, numbers, underscore, hyphen only)</p>
+      <input type="text" id="renameInput" placeholder="New name" style="margin-bottom:1rem; width:100%" />
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="renameModalCancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="renameModalConfirm">Rename</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="tagsModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>Edit tags</h3>
+      <p class="subtitle" style="margin-bottom:0.75rem">Comma-separated tags for filtering</p>
+      <input type="text" id="tagsInput" placeholder="meme, music, ..." style="margin-bottom:1rem; width:100%" />
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="tagsModalCancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="tagsModalConfirm">Save</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="editChannelModal" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:28rem">
+      <h3>Edit / manage channel</h3>
+      <div class="form-row">
+        <label for="editChannelName">Name</label>
+        <input type="text" id="editChannelName" placeholder="channel-name" style="width:100%" />
+      </div>
+      <div class="form-row">
+        <label for="editChannelParent">Category</label>
+        <select id="editChannelParent" style="width:100%"><option value="">— None —</option></select>
+      </div>
+      <div class="form-row">
+        <label for="editChannelPosition">Position (0 = top)</label>
+        <input type="number" id="editChannelPosition" min="0" step="1" style="width:6rem" />
+      </div>
+      <div class="form-row" id="editChannelTopicRow">
+        <label for="editChannelTopic">Topic (text / announcement)</label>
+        <input type="text" id="editChannelTopic" placeholder="Channel topic" style="width:100%" maxlength="1024" />
+      </div>
+      <div class="form-row" id="editChannelNsfwRow">
+        <label><input type="checkbox" id="editChannelNsfw" /> NSFW</label>
+      </div>
+      <div class="form-row" id="editChannelSlowmodeRow">
+        <label for="editChannelSlowmode">Slowmode (seconds, 0 = off)</label>
+        <input type="number" id="editChannelSlowmode" min="0" max="21600" step="1" style="width:6rem" />
+      </div>
+      <div class="form-row" id="editChannelBitrateRow" style="display:none">
+        <label for="editChannelBitrate">Bitrate (voice, 8000–384000)</label>
+        <input type="number" id="editChannelBitrate" min="8000" max="384000" step="1000" style="width:8rem" />
+      </div>
+      <div class="form-row" id="editChannelUserLimitRow" style="display:none">
+        <label for="editChannelUserLimit">User limit (voice, 0 = no limit)</label>
+        <input type="number" id="editChannelUserLimit" min="0" max="99" step="1" style="width:5rem" />
+      </div>
+      <div class="modal-actions" style="justify-content:space-between; flex-wrap:wrap; gap:0.5rem">
+        <button type="button" class="btn btn-danger" id="editChannelModalDelete">Delete channel</button>
+        <span style="display:flex; gap:0.5rem">
+          <button type="button" class="btn btn-ghost" id="editChannelModalCancel">Cancel</button>
+          <button type="button" class="btn btn-primary" id="editChannelModalConfirm">Save</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="editRoleModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="editRoleModalTitle">Edit role</h3>
+      <div class="form-row">
+        <label for="editRoleName">Name</label>
+        <input type="text" id="editRoleName" placeholder="Role name" style="width:100%" />
+      </div>
+      <div class="form-row">
+        <label for="editRoleColor">Color (hex, e.g. #ff0000)</label>
+        <input type="text" id="editRoleColor" placeholder="#ffffff" style="width:8rem" />
+      </div>
+      <div class="form-row">
+        <label for="editRolePosition">Position (higher = above)</label>
+        <input type="number" id="editRolePosition" min="0" step="1" style="width:6rem" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="editRoleModalCancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="editRoleModalConfirm">Save</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="cropSoundModal" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:32rem">
+      <h3>Upload a sound</h3>
+      <p class="subtitle" style="margin-bottom:0.75rem; font-size:0.85rem">Drag the white handles on the waveform to select the part to keep. Play to preview, then upload.</p>
+      <audio id="cropSoundAudio" preload="auto" style="display:none"></audio>
+      <div class="crop-preview-wrap">
+        <div class="crop-preview-header">
+          <button type="button" class="crop-play-btn" id="cropWaveformPlayBtn" aria-label="Play">▶</button>
+          <button type="button" class="crop-play-btn crop-stop-btn" id="cropWaveformStopBtn" aria-label="Stop and set end here">■</button>
+          <span class="crop-time" id="cropTimeText">0:00 / 0:00</span>
+        </div>
+        <div class="crop-waveform-wrap" id="cropWaveformWrap">
+          <canvas id="cropWaveformCanvas" class="crop-waveform-canvas"></canvas>
+          <div class="crop-playhead" id="cropPlayhead"></div>
+          <div class="crop-handle crop-handle-start" id="cropHandleStart" title="Drag to set start"></div>
+          <div class="crop-handle crop-handle-end" id="cropHandleEnd" title="Drag to set end"></div>
+          <div class="crop-selection" id="cropSelection"></div>
+        </div>
+      </div>
+      <div style="position:absolute;left:-9999px;overflow:hidden" aria-hidden="true">
+        <input type="number" id="cropStart" min="0" step="0.1" />
+        <input type="number" id="cropEnd" min="0" step="0.1" />
+      </div>
+      <p class="subtitle" style="font-size:0.8rem; color:var(--muted); margin-top:0.5rem" id="cropDurationText">Selected: —</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cropSoundModalCancel">Never mind</button>
+        <button type="button" class="btn btn-primary" id="cropSoundModalSave">Upload</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="confirmDeleteServerModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="confirmDeleteServerModalTitle">Delete?</h3>
+      <p id="confirmDeleteServerModalBody"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="confirmDeleteServerModalCancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteServerModalConfirm">Delete</button>
       </div>
     </div>
   </div>
@@ -351,9 +843,27 @@
     const deleteModal = document.getElementById("deleteModal");
     const deleteModalCancel = document.getElementById("deleteModalCancel");
     const deleteModalConfirm = document.getElementById("deleteModalConfirm");
+    const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
 
     const FAV_COOKIE = "soundboard_favorites";
     const FAV_MAX_AGE_DAYS = 365;
+    const AUTH_STORAGE = "soundboard_web_token";
+
+    async function apiFetch(url, opts = {}) {
+      const token = sessionStorage.getItem(AUTH_STORAGE);
+      const headers = { ...opts.headers };
+      if (token) headers["Authorization"] = "Bearer " + token;
+      let res = await fetch(url, { ...opts, headers });
+      if (res.status === 401) {
+        const password = prompt("Dashboard password:");
+        if (password != null && password.trim()) {
+          sessionStorage.setItem(AUTH_STORAGE, password.trim());
+          headers["Authorization"] = "Bearer " + password.trim();
+          res = await fetch(url, { ...opts, headers });
+        }
+      }
+      return res;
+    }
 
     function getFavorites() {
       const match = document.cookie.match(new RegExp("(?:^|; )" + FAV_COOKIE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"));
@@ -390,6 +900,56 @@
           btn.style.display = isStop ? "none" : "";
         }
       });
+    }
+
+    /** Copy text to clipboard; works over HTTP (fallback when clipboard API is restricted). */
+    async function copyToClipboard(text) {
+      if (!text) return false;
+      try {
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (_) {}
+      const el = document.createElement("textarea");
+      el.value = text;
+      el.readOnly = true;
+      el.setAttribute("aria-hidden", "true");
+      Object.assign(el.style, {
+        position: "fixed", top: "0", left: "0", width: "2em", height: "2em",
+        padding: "0", border: "none", outline: "none", boxShadow: "none",
+        background: "transparent", opacity: "0", zIndex: "-1"
+      });
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      el.setSelectionRange(0, text.length);
+      let ok = false;
+      try {
+        ok = document.execCommand("copy");
+      } catch (_) {}
+      document.body.removeChild(el);
+      return ok;
+    }
+
+    /** Show command in a small popover so user can manually copy (Ctrl+C). */
+    function showCopyFallbackPopover(text, anchor) {
+      const wrap = document.createElement("div");
+      wrap.className = "copy-fallback";
+      wrap.innerHTML = `<div class="copy-fallback-inner">
+        <label>Copy this command:</label>
+        <input type="text" readonly value="${escapeAttr(text)}" />
+        <button type="button" class="copy-fallback-select">Select all</button>
+      </div>`;
+      const input = wrap.querySelector("input");
+      const selectBtn = wrap.querySelector(".copy-fallback-select");
+      const close = () => { wrap.remove(); };
+      selectBtn.addEventListener("click", () => { input.select(); input.setSelectionRange(0, text.length); });
+      input.addEventListener("click", () => { input.select(); });
+      wrap.addEventListener("click", (e) => { if (e.target === wrap) close(); });
+      document.body.appendChild(wrap);
+      requestAnimationFrame(() => { input.select(); input.focus(); });
+      setTimeout(close, 8000);
     }
 
     function showToast(message, type) {
@@ -443,11 +1003,12 @@
       const loadingStillThere = document.getElementById("loading");
       if (loadingStillThere) loadingStillThere.remove();
       try {
-        const res = await fetch("/api/sounds", { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+        const res = await apiFetch("/api/sounds", { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || "Failed to load");
         allSounds = data.sounds || [];
         applySoundFilter();
+        loadStats();
       } catch (e) {
         soundList.innerHTML = '<li class="empty">Could not load sounds. Is the server running?</li>';
       }
@@ -462,31 +1023,40 @@
         updateSoundCount(0, allSounds.length);
         return;
       }
-      soundList.innerHTML = sounds.map(({ name, command }) => {
+      soundList.innerHTML = sounds.map((s) => {
+        const name = s.name || "";
+        const command = s.command || (prefix + "play " + name);
+        const tags = Array.isArray(s.tags) ? s.tags : [];
+        const playCount = typeof s.playCount === "number" ? s.playCount : 0;
         const isFav = favoritesSet.has(name);
+        const tagsHtml = tags.length ? `<div class="sound-tags">${tags.map((t) => `<span class="sound-tag">${escapeHtml(t)}</span>`).join("")}</div>` : "";
         return `<li class="sound-item" data-name="${escapeAttr(name)}">
-          <span class="sound-name">${escapeHtml(name)}<span class="sound-command">${escapeHtml(command)}</span></span>
+          <input type="checkbox" class="bulk-check" data-name="${escapeAttr(name)}" aria-label="Select for bulk delete" />
+          <span class="sound-name">${escapeHtml(name)}<span class="sound-command">${escapeHtml(command)}</span>${playCount ? `<span class="sound-playcount" title="Times played">▶ ${playCount}</span>` : ""}${tagsHtml}</span>
           <div class="sound-actions">
-            <button type="button" class="btn-play" data-name="${escapeAttr(name)}" title="Preview" aria-label="Play preview">Play</button>
-            <button type="button" class="btn-stop" data-name="${escapeAttr(name)}" title="Stop preview" style="display:none" aria-label="Stop preview">Stop</button>
-            <button type="button" class="btn-fav ${isFav ? "is-fav" : ""}" data-name="${escapeAttr(name)}" title="${isFav ? "Remove from favorites" : "Add to favorites"}" aria-label="${isFav ? "Remove from favorites" : "Add to favorites"}">${isFav ? "★" : "☆"}</button>
-            <button type="button" class="btn-copy" data-command="${escapeAttr(command)}" title="Copy command" aria-label="Copy play command">Copy</button>
-            <button type="button" class="btn-delete" data-name="${escapeAttr(name)}" title="Delete sound" aria-label="Delete sound">Delete</button>
+            <button type="button" class="btn-play" data-name="${escapeAttr(name)}" title="Preview">Play</button>
+            <button type="button" class="btn-stop" data-name="${escapeAttr(name)}" title="Stop preview" style="display:none">Stop</button>
+            <button type="button" class="btn-fav ${isFav ? "is-fav" : ""}" data-name="${escapeAttr(name)}" title="${isFav ? "Remove from favorites" : "Add to favorites"}">${isFav ? "★" : "☆"}</button>
+            <button type="button" class="btn-copy" data-command="${escapeAttr(command)}" title="Copy command">Copy</button>
+            <button type="button" class="btn-rename" data-name="${escapeAttr(name)}" title="Rename">Rename</button>
+            <button type="button" class="btn-tags" data-name="${escapeAttr(name)}" title="Edit tags">Tags</button>
+            <button type="button" class="btn-delete" data-name="${escapeAttr(name)}" title="Delete sound">Delete</button>
           </div>
         </li>`;
       }).join("");
       soundList.querySelectorAll(".btn-copy").forEach((btn) => {
         btn.addEventListener("click", async () => {
           const cmd = btn.getAttribute("data-command");
-          try {
-            await navigator.clipboard.writeText(cmd);
+          const ok = await copyToClipboard(cmd);
+          if (ok) {
             btn.textContent = "Copied!";
             btn.classList.add("copied");
             showToast("Command copied to clipboard.");
             setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1500);
-          } catch {
+          } else {
             btn.textContent = "Copy failed";
             setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+            showCopyFallbackPopover(cmd, btn);
           }
         });
       });
@@ -527,7 +1097,22 @@
           openDeleteModal(name);
         });
       });
+      soundList.querySelectorAll(".btn-rename").forEach((btn) => {
+        btn.addEventListener("click", () => openRenameModal(btn.getAttribute("data-name")));
+      });
+      soundList.querySelectorAll(".btn-tags").forEach((btn) => {
+        btn.addEventListener("click", () => openTagsModal(btn.getAttribute("data-name")));
+      });
+      soundList.querySelectorAll(".bulk-check").forEach((cb) => {
+        cb.addEventListener("change", updateBulkDeleteVisibility);
+      });
+      updateBulkDeleteVisibility();
       updatePlayButtons();
+    }
+
+    function updateBulkDeleteVisibility() {
+      const checked = soundList.querySelectorAll(".bulk-check:checked");
+      bulkDeleteBtn.style.display = checked.length ? "inline-block" : "none";
     }
 
     function updateSoundCount(visible, total) {
@@ -552,7 +1137,7 @@
       const name = deletePendingName;
       closeDeleteModal();
       try {
-        const res = await fetch("/api/sounds/" + encodeURIComponent(name), { method: "DELETE" });
+        const res = await apiFetch("/api/sounds/" + encodeURIComponent(name), { method: "DELETE" });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || "Delete failed");
         favoritesSet.delete(name);
@@ -564,6 +1149,113 @@
       }
     });
     deleteModal.addEventListener("click", (e) => { if (e.target === deleteModal) closeDeleteModal(); });
+
+    let renamePendingName = null;
+    const renameModalEl = document.getElementById("renameModal");
+    const renameInput = document.getElementById("renameInput");
+    const renameModalCancel = document.getElementById("renameModalCancel");
+    const renameModalConfirm = document.getElementById("renameModalConfirm");
+    function openRenameModal(name) {
+      renamePendingName = name;
+      renameInput.value = name;
+      renameModalEl.classList.add("show");
+      renameInput.focus();
+    }
+    function closeRenameModal() {
+      renameModalEl.classList.remove("show");
+      renamePendingName = null;
+    }
+    renameModalCancel.addEventListener("click", closeRenameModal);
+    renameModalConfirm.addEventListener("click", async () => {
+      if (!renamePendingName) return;
+      const newName = renameInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, "_").replace(/_+/g, "_").slice(0, 80) || "sound";
+      if (!newName) return;
+      try {
+        const res = await apiFetch("/api/sounds/" + encodeURIComponent(renamePendingName), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ newName }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Rename failed");
+        closeRenameModal();
+        loadSounds();
+        showToast("Renamed to " + data.name);
+      } catch (e) {
+        showToast(e.message || "Rename failed.", "error");
+      }
+    });
+    renameModalEl.addEventListener("click", (e) => { if (e.target === renameModalEl) closeRenameModal(); });
+
+    let tagsPendingName = null;
+    const tagsModalEl = document.getElementById("tagsModal");
+    const tagsInput = document.getElementById("tagsInput");
+    const tagsModalCancel = document.getElementById("tagsModalCancel");
+    const tagsModalConfirm = document.getElementById("tagsModalConfirm");
+    function openTagsModal(name) {
+      tagsPendingName = name;
+      const s = allSounds.find((x) => x.name === name);
+      tagsInput.value = Array.isArray(s?.tags) ? s.tags.join(", ") : "";
+      tagsModalEl.classList.add("show");
+      tagsInput.focus();
+    }
+    function closeTagsModal() {
+      tagsModalEl.classList.remove("show");
+      tagsPendingName = null;
+    }
+    tagsModalCancel.addEventListener("click", closeTagsModal);
+    tagsModalConfirm.addEventListener("click", async () => {
+      if (!tagsPendingName) return;
+      const tags = tagsInput.value.split(",").map((t) => t.trim()).filter(Boolean);
+      try {
+        const res = await apiFetch("/api/sounds/" + encodeURIComponent(tagsPendingName) + "/tags", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tags }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Failed");
+        closeTagsModal();
+        loadSounds();
+        showToast("Tags saved.");
+      } catch (e) {
+        showToast(e.message || "Failed.", "error");
+      }
+    });
+    tagsModalEl.addEventListener("click", (e) => { if (e.target === tagsModalEl) closeTagsModal(); });
+
+    bulkDeleteBtn.addEventListener("click", async () => {
+      const checked = soundList.querySelectorAll(".bulk-check:checked");
+      const names = [...checked].map((cb) => cb.getAttribute("data-name")).filter(Boolean);
+      if (!names.length) return;
+      if (!confirm("Delete " + names.length + " sound(s)?")) return;
+      try {
+        const res = await apiFetch("/api/sounds/bulk-delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ names }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Failed");
+        loadSounds();
+        showToast("Deleted " + (data.count || 0) + " sound(s).");
+      } catch (e) {
+        showToast(e.message || "Bulk delete failed.", "error");
+      }
+    });
+
+    const themeToggle = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("soundboard_theme");
+    if (savedTheme === "light") document.body.classList.add("theme-light");
+    themeToggle.textContent = document.body.classList.contains("theme-light") ? "🌙 Dark" : "☀️ Light";
+    const refreshBtn = document.getElementById("refreshBtn");
+    if (refreshBtn) refreshBtn.addEventListener("click", () => location.reload());
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("theme-light");
+      const isLight = document.body.classList.contains("theme-light");
+      localStorage.setItem("soundboard_theme", isLight ? "light" : "dark");
+      themeToggle.textContent = isLight ? "🌙 Dark" : "☀️ Light";
+    });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         if (deleteModal.classList.contains("show")) closeDeleteModal();
@@ -581,7 +1273,7 @@
       const favOnly = favOnlyCheckbox.checked;
       const sortBy = sortSelect?.value || "az";
       let list = allSounds;
-      if (q) list = list.filter(({ name }) => name.toLowerCase().includes(q));
+      if (q) list = list.filter((s) => s.name.toLowerCase().includes(q) || (Array.isArray(s.tags) && s.tags.some((t) => t.toLowerCase().includes(q))));
       if (favOnly) list = list.filter(({ name }) => favoritesSet.has(name));
       if (sortBy === "za") list = [...list].sort((a, b) => b.name.localeCompare(a.name, undefined, { sensitivity: "base" }));
       else if (sortBy === "fav") list = [...list].sort((a, b) => (favoritesSet.has(b.name) ? 1 : 0) - (favoritesSet.has(a.name) ? 1 : 0) || a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
@@ -625,14 +1317,16 @@
       commandsList.querySelectorAll(".cmd-copy").forEach((btn) => {
         btn.addEventListener("click", async () => {
           const cmd = btn.getAttribute("data-command");
-          try {
-            await navigator.clipboard.writeText(cmd);
+          const ok = await copyToClipboard(cmd);
+          if (ok) {
             btn.textContent = "Copied!";
             btn.classList.add("copied");
             showToast("Command copied to clipboard.");
             setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1500);
-          } catch {
-            btn.textContent = "Copy";
+          } else {
+            btn.textContent = "Copy failed";
+            setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+            showCopyFallbackPopover(cmd, btn);
           }
         });
       });
@@ -661,7 +1355,7 @@
         { name: "library", usage: "", category: "Voice", command: prefix + "library" },
       ];
       try {
-        const res = await fetch("/api/commands");
+        const res = await apiFetch("/api/commands");
         const data = await res.json();
         if (data.ok && data.commands && data.commands.length) {
           renderCommandsList(data.commands);
@@ -676,6 +1370,284 @@
     searchInput.addEventListener("input", applySoundFilter);
     favOnlyCheckbox.addEventListener("change", applySoundFilter);
     sortSelect.addEventListener("change", applySoundFilter);
+
+    let cropSoundPending = null;
+    let cropSoundObjectUrl = null;
+    let cropWaveformDuration = 0;
+    const cropSoundModal = document.getElementById("cropSoundModal");
+    const cropSoundAudio = document.getElementById("cropSoundAudio");
+    const cropStart = document.getElementById("cropStart");
+    const cropEnd = document.getElementById("cropEnd");
+    const cropDurationText = document.getElementById("cropDurationText");
+    const cropSoundModalCancel = document.getElementById("cropSoundModalCancel");
+    const cropSoundModalSave = document.getElementById("cropSoundModalSave");
+    const cropWaveformWrap = document.getElementById("cropWaveformWrap");
+    const cropWaveformCanvas = document.getElementById("cropWaveformCanvas");
+    const cropHandleStart = document.getElementById("cropHandleStart");
+    const cropHandleEnd = document.getElementById("cropHandleEnd");
+    const cropSelection = document.getElementById("cropSelection");
+    const cropWaveformPlayBtn = document.getElementById("cropWaveformPlayBtn");
+    const cropWaveformStopBtn = document.getElementById("cropWaveformStopBtn");
+    const cropPlayhead = document.getElementById("cropPlayhead");
+    const cropTimeText = document.getElementById("cropTimeText");
+
+    function cropTimeFmt(s) {
+      const m = Math.floor(s / 60);
+      const sec = (s % 60).toFixed(2);
+      return m + ":" + (sec.length < 5 ? "0" + sec : sec);
+    }
+    function updateCropDurationText() {
+      const start = parseFloat(cropStart.value, 10) || 0;
+      const end = parseFloat(cropEnd.value, 10) || 0;
+      const dur = Math.max(0, end - start);
+      cropDurationText.textContent = "Selected: " + dur.toFixed(1) + " s";
+      if (cropWaveformDuration > 0) {
+        cropTimeText.textContent = cropTimeFmt(start) + " – " + cropTimeFmt(end) + " / " + cropTimeFmt(cropWaveformDuration);
+      }
+    }
+    function updateCropHandles() {
+      const start = parseFloat(cropStart.value, 10) || 0;
+      const end = parseFloat(cropEnd.value, 10) || 0;
+      const dur = cropWaveformDuration || 1;
+      const startPct = Math.max(0, Math.min(100, (start / dur) * 100));
+      const endPct = Math.max(0, Math.min(100, (end / dur) * 100));
+      cropHandleStart.style.left = startPct + "%";
+      cropHandleEnd.style.left = Math.max(startPct, endPct) + "%";
+      cropSelection.style.left = startPct + "%";
+      cropSelection.style.width = (Math.max(startPct, endPct) - startPct) + "%";
+    }
+    function updateCropPlayhead() {
+      if (!cropPlayhead || !cropWaveformDuration) return;
+      const t = cropSoundAudio.currentTime || 0;
+      const pct = Math.max(0, Math.min(100, (t / cropWaveformDuration) * 100));
+      cropPlayhead.style.left = pct + "%";
+    }
+    cropStart.addEventListener("input", () => { updateCropDurationText(); updateCropHandles(); });
+    cropEnd.addEventListener("input", () => { updateCropDurationText(); updateCropHandles(); });
+
+    function drawCropWaveform(buffer) {
+      if (!cropWaveformCanvas || !cropWaveformWrap) return;
+      const w = cropWaveformWrap.clientWidth;
+      const h = cropWaveformWrap.clientHeight;
+      cropWaveformCanvas.width = w;
+      cropWaveformCanvas.height = h;
+      const ctx = cropWaveformCanvas.getContext("2d");
+      const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg-subtle").trim() || "#1e293b";
+      const fg = getComputedStyle(document.documentElement).getPropertyValue("--text-muted").trim() || "#94a3b8";
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+      if (!buffer) return;
+      const data = buffer.getChannelData(0);
+      const step = Math.ceil(data.length / w);
+      const amp = h / 2;
+      ctx.fillStyle = fg;
+      for (let i = 0; i < w; i++) {
+        const slice = data.slice(i * step, (i + 1) * step);
+        if (slice.length === 0) continue;
+        const min = slice.reduce((a, b) => Math.min(a, b), 0);
+        const max = slice.reduce((a, b) => Math.max(a, b), 0);
+        const y1 = amp - min * amp;
+        const y2 = amp - max * amp;
+        ctx.fillRect(i, Math.min(y1, y2), 1, Math.max(1, Math.abs(y2 - y1)));
+      }
+    }
+
+    let cropDragging = null;
+    function onCropWrapMouseMove(e) {
+      if (!cropDragging || !cropWaveformDuration) return;
+      const rect = cropWaveformWrap.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const t = Math.max(0, Math.min(cropWaveformDuration, x * cropWaveformDuration));
+      if (cropDragging === "start") {
+        const end = parseFloat(cropEnd.value, 10) || cropWaveformDuration;
+        cropStart.value = Math.min(t, end - 0.1).toFixed(1);
+      } else {
+        const start = parseFloat(cropStart.value, 10) || 0;
+        cropEnd.value = Math.max(t, start + 0.1).toFixed(1);
+      }
+      updateCropDurationText();
+      updateCropHandles();
+    }
+    function onCropWrapMouseUp() {
+      cropDragging = null;
+      document.removeEventListener("mousemove", onCropWrapMouseMove);
+      document.removeEventListener("mouseup", onCropWrapMouseUp);
+    }
+    cropHandleStart.addEventListener("mousedown", (e) => { e.preventDefault(); cropDragging = "start"; document.addEventListener("mousemove", onCropWrapMouseMove); document.addEventListener("mouseup", onCropWrapMouseUp); });
+    cropHandleEnd.addEventListener("mousedown", (e) => { e.preventDefault(); cropDragging = "end"; document.addEventListener("mousemove", onCropWrapMouseMove); document.addEventListener("mouseup", onCropWrapMouseUp); });
+
+    cropSoundAudio.addEventListener("timeupdate", updateCropPlayhead);
+    cropSoundAudio.addEventListener("ended", updateCropPlayhead);
+
+    cropWaveformPlayBtn.addEventListener("click", () => {
+      const start = parseFloat(cropStart.value, 10) || 0;
+      const end = parseFloat(cropEnd.value, 10) || 0;
+      if (!cropSoundAudio.src || end <= start) return;
+      cropSoundAudio.currentTime = start;
+      cropSoundAudio.play();
+      const stopAt = () => {
+        if (cropSoundAudio.currentTime >= end) {
+          cropSoundAudio.pause();
+          cropSoundAudio.currentTime = end;
+          cropSoundAudio.removeEventListener("timeupdate", stopAt);
+          updateCropPlayhead();
+        }
+      };
+      cropSoundAudio.addEventListener("timeupdate", stopAt);
+    });
+
+    cropWaveformStopBtn.addEventListener("click", () => {
+      cropSoundAudio.pause();
+      const t = cropSoundAudio.currentTime;
+      if (cropWaveformDuration > 0 && typeof t === "number" && !isNaN(t)) {
+        const start = parseFloat(cropStart.value, 10) || 0;
+        cropEnd.value = Math.max(start + 0.1, Math.min(cropWaveformDuration, t)).toFixed(1);
+        updateCropHandles();
+        updateCropDurationText();
+      }
+      updateCropPlayhead();
+    });
+
+    cropSoundModalCancel.addEventListener("click", () => {
+      cropSoundModal.classList.remove("show");
+      if (cropSoundObjectUrl) {
+        try { URL.revokeObjectURL(cropSoundObjectUrl); } catch (_) {}
+        cropSoundObjectUrl = null;
+      }
+      cropSoundPending = null;
+      cropWaveformDuration = 0;
+      cropSoundAudio.src = "";
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = "Add sound";
+    });
+
+    cropSoundModalSave.addEventListener("click", async () => {
+      if (!cropSoundPending) return;
+      const startTime = parseFloat(cropStart.value, 10);
+      const endTime = parseFloat(cropEnd.value, 10);
+      if (isNaN(startTime) || isNaN(endTime) || endTime <= startTime || startTime < 0) {
+        showToast("Set valid start and end times.");
+        return;
+      }
+      cropSoundModalSave.disabled = true;
+      cropSoundModalSave.textContent = "Uploading…";
+      try {
+        if (cropSoundPending.type === "url") {
+          const res = await apiFetch("/api/upload/url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: cropSoundPending.url, startTime, endTime }),
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || "Upload failed");
+          setValidation(urlValidation, "Added: " + data.name + ". Restart the bot to use in Discord.", "success");
+          urlInput.value = "";
+        } else {
+          const fd = new FormData();
+          fd.append("sound", cropSoundPending.file);
+          fd.append("startTime", String(startTime));
+          fd.append("endTime", String(endTime));
+          const res = await apiFetch("/api/upload", { method: "POST", body: fd });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || "Upload failed");
+          setValidation(fileValidation, "Added: " + data.name + ". Restart the bot to use in Discord.", "success");
+          fileInput.value = "";
+        }
+        cropSoundModal.classList.remove("show");
+        if (cropSoundObjectUrl) {
+          try { URL.revokeObjectURL(cropSoundObjectUrl); } catch (_) {}
+          cropSoundObjectUrl = null;
+        }
+        cropSoundPending = null;
+        cropSoundAudio.src = "";
+        showToast("Sound added.");
+        try {
+          await apiFetch("/api/reload", { method: "POST" });
+        } catch (_) {}
+        await loadSounds();
+      } catch (err) {
+        showToast(err.message || "Upload failed.");
+      } finally {
+        cropSoundModalSave.disabled = false;
+        cropSoundModalSave.textContent = "Upload";
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Add sound";
+      }
+    });
+
+    const SOUND_EXT_LIST = [".mp3", ".wav", ".ogg", ".flac", ".m4a"];
+    const SOUND_TYPES = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac", "audio/mp4", "audio/x-wav"];
+    function isAudioFile(file) {
+      if (!file || !file.name) return false;
+      const ext = "." + (file.name.split(".").pop() || "").toLowerCase();
+      if (SOUND_EXT_LIST.includes(ext)) return true;
+      if (file.type && SOUND_TYPES.some((t) => file.type.toLowerCase().includes(t))) return true;
+      return false;
+    }
+
+    async function openCropModalWithFile(file) {
+      if (!file || !isAudioFile(file)) return;
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Loading…";
+      const audioUrl = URL.createObjectURL(file);
+      cropSoundObjectUrl = audioUrl;
+      try {
+        cropSoundAudio.src = audioUrl;
+        const duration = await new Promise((resolve, reject) => {
+          cropSoundAudio.onloadedmetadata = () => resolve(cropSoundAudio.duration);
+          cropSoundAudio.onerror = () => reject(new Error("Could not load audio"));
+          if (cropSoundAudio.readyState >= 1) resolve(cropSoundAudio.duration);
+        });
+        if (typeof duration !== "number" || isNaN(duration) || duration <= 0) throw new Error("Could not get audio duration.");
+        cropSoundPending = { type: "file", file };
+        cropWaveformDuration = duration;
+        cropStart.value = "0";
+        cropEnd.value = duration.toFixed(1);
+        cropStart.max = duration;
+        cropEnd.max = duration;
+        try {
+          const ab = await file.arrayBuffer();
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const buffer = await ctx.decodeAudioData(ab);
+          ctx.close();
+          drawCropWaveform(buffer);
+        } catch (_) {
+          drawCropWaveform(null);
+        }
+        updateCropHandles();
+        updateCropDurationText();
+        cropSoundAudio.currentTime = 0;
+        updateCropPlayhead();
+        cropSoundModal.classList.add("show");
+      } catch (err) {
+        try { URL.revokeObjectURL(audioUrl); } catch (_) {}
+        setValidation(fileValidation, err.message || "Could not load audio.", "error");
+        showToast(err.message || "Could not load audio.");
+      }
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = "Add sound";
+    }
+
+    const addSoundDropZone = document.getElementById("addSoundDropZone");
+    if (addSoundDropZone) {
+      addSoundDropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addSoundDropZone.classList.add("drag-over");
+      });
+      addSoundDropZone.addEventListener("dragleave", (e) => {
+        e.preventDefault();
+        addSoundDropZone.classList.remove("drag-over");
+      });
+      addSoundDropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addSoundDropZone.classList.remove("drag-over");
+        const file = e.dataTransfer.files?.[0];
+        if (file && isAudioFile(file)) openCropModalWithFile(file);
+        else if (file) showToast("Drop an audio file (.mp3, .wav, .ogg, .flac, .m4a).");
+      });
+    }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -695,41 +1667,694 @@
       if (urlVal && !validateUrl()) return;
       if (fileVal && !validateFile()) return;
 
+      if (fileVal) {
+        await openCropModalWithFile(fileVal);
+        return;
+      }
+
       btnSubmit.disabled = true;
-      btnSubmit.textContent = "Adding…";
+      btnSubmit.textContent = "Loading…";
 
       try {
-        if (urlVal) {
-          const res = await fetch("/api/upload/url", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url: urlVal }),
-          });
-          const data = await res.json();
-          if (!data.ok) throw new Error(data.error || "Upload failed");
-          setValidation(urlValidation, "Added: " + data.name + ". Restart the bot to use in Discord.", "success");
-          urlInput.value = "";
-        } else {
-          const fd = new FormData(form);
-          const res = await fetch("/api/upload", { method: "POST", body: fd });
-          const data = await res.json();
-          if (!data.ok) throw new Error(data.error || "Upload failed");
-          setValidation(fileValidation, "Added: " + data.name + ". Restart the bot to use in Discord.", "success");
-          fileInput.value = "";
+        const res = await fetch(urlVal, { mode: "cors" });
+        if (!res.ok) throw new Error("Could not load URL");
+        const blob = await res.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        cropSoundObjectUrl = audioUrl;
+        cropSoundAudio.src = audioUrl;
+        const duration = await new Promise((resolve, reject) => {
+          cropSoundAudio.onloadedmetadata = () => resolve(cropSoundAudio.duration);
+          cropSoundAudio.onerror = () => reject(new Error("Could not load audio"));
+          if (cropSoundAudio.readyState >= 1) resolve(cropSoundAudio.duration);
+        });
+        if (typeof duration !== "number" || isNaN(duration) || duration <= 0) {
+          throw new Error("Could not get audio duration.");
         }
-        await new Promise((r) => setTimeout(r, 150));
-        await loadSounds();
+        cropSoundPending = { type: "url", url: urlVal };
+        cropWaveformDuration = duration;
+        cropStart.value = "0";
+        cropEnd.value = duration.toFixed(1);
+        cropStart.max = duration;
+        cropEnd.max = duration;
+        try {
+          const ab = await fetch(audioUrl).then((r) => r.arrayBuffer());
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const buffer = await ctx.decodeAudioData(ab);
+          ctx.close();
+          drawCropWaveform(buffer);
+        } catch (_) {
+          drawCropWaveform(null);
+        }
+        updateCropHandles();
+        updateCropDurationText();
+        cropSoundAudio.currentTime = 0;
+        updateCropPlayhead();
+        cropSoundModal.classList.add("show");
       } catch (err) {
-        setValidation(urlVal ? urlValidation : fileValidation, err.message || "Upload failed.", "error");
-        showToast(err.message || "Upload failed.", "error");
+        if (cropSoundObjectUrl) {
+          try { URL.revokeObjectURL(cropSoundObjectUrl); } catch (_) {}
+          cropSoundObjectUrl = null;
+        }
+        setValidation(urlValidation, err.message || "Could not load audio.", "error");
+        showToast(err.message || "Could not load audio.");
       } finally {
         btnSubmit.disabled = false;
         btnSubmit.textContent = "Add sound";
       }
     });
 
+    async function loadStats() {
+      const el = document.getElementById("statsList");
+      if (!el) return;
+      try {
+        const res = await apiFetch("/api/stats");
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
+        const list = data.mostPlayed || [];
+        if (list.length === 0) {
+          el.innerHTML = "<li class=\"empty\">No plays yet.</li>";
+          return;
+        }
+        el.innerHTML = list.slice(0, 15).map(({ name, count }) => `<li><span>${escapeHtml(name)}</span><span>${count}×</span></li>`).join("");
+      } catch {
+        el.innerHTML = "<li class=\"empty\">—</li>";
+      }
+    }
+
+    const qrImage = document.getElementById("qrImage");
+    if (qrImage) qrImage.src = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=" + encodeURIComponent(window.location.href);
+
+    const navSounds = document.getElementById("navSounds");
+    const navServer = document.getElementById("navServer");
+    const pageSounds = document.getElementById("pageSounds");
+    const pageServer = document.getElementById("pageServer");
+    const guildSelect = document.getElementById("guildSelect");
+    const channelList = document.getElementById("channelList");
+    const memberList = document.getElementById("memberList");
+    const serverChannelsSection = document.getElementById("serverChannelsSection");
+    const serverMembersSection = document.getElementById("serverMembersSection");
+    const serverLoadingSection = document.getElementById("serverLoadingSection");
+    const serverLoadingMsg = document.getElementById("serverLoadingMsg");
+    const createChannelSection = document.getElementById("createChannelSection");
+    const newChannelEmoji = document.getElementById("newChannelEmoji");
+    const newChannelName = document.getElementById("newChannelName");
+    const newChannelType = document.getElementById("newChannelType");
+    const newChannelParent = document.getElementById("newChannelParent");
+    const createChannelBtn = document.getElementById("createChannelBtn");
+    const createChannelValidation = document.getElementById("createChannelValidation");
+    const createDefaultLayoutBtn = document.getElementById("createDefaultLayoutBtn");
+    const createDefaultValidation = document.getElementById("createDefaultValidation");
+    const serverRolesSection = document.getElementById("serverRolesSection");
+    const roleList = document.getElementById("roleList");
+    const createRoleBtn = document.getElementById("createRoleBtn");
+    const createRoleValidation = document.getElementById("createRoleValidation");
+    const editChannelModal = document.getElementById("editChannelModal");
+    const editChannelName = document.getElementById("editChannelName");
+    const editChannelParent = document.getElementById("editChannelParent");
+    const editChannelPosition = document.getElementById("editChannelPosition");
+    const editChannelTopic = document.getElementById("editChannelTopic");
+    const editChannelTopicRow = document.getElementById("editChannelTopicRow");
+    const editChannelNsfw = document.getElementById("editChannelNsfw");
+    const editChannelNsfwRow = document.getElementById("editChannelNsfwRow");
+    const editChannelSlowmode = document.getElementById("editChannelSlowmode");
+    const editChannelSlowmodeRow = document.getElementById("editChannelSlowmodeRow");
+    const editChannelBitrate = document.getElementById("editChannelBitrate");
+    const editChannelBitrateRow = document.getElementById("editChannelBitrateRow");
+    const editChannelUserLimit = document.getElementById("editChannelUserLimit");
+    const editChannelUserLimitRow = document.getElementById("editChannelUserLimitRow");
+    const editChannelModalCancel = document.getElementById("editChannelModalCancel");
+    const editChannelModalConfirm = document.getElementById("editChannelModalConfirm");
+    const editChannelModalDelete = document.getElementById("editChannelModalDelete");
+    const editRoleModal = document.getElementById("editRoleModal");
+    const editRoleModalTitle = document.getElementById("editRoleModalTitle");
+    const editRoleName = document.getElementById("editRoleName");
+    const editRoleColor = document.getElementById("editRoleColor");
+    const editRolePosition = document.getElementById("editRolePosition");
+    const editRoleModalCancel = document.getElementById("editRoleModalCancel");
+    const editRoleModalConfirm = document.getElementById("editRoleModalConfirm");
+    const confirmDeleteServerModal = document.getElementById("confirmDeleteServerModal");
+    const confirmDeleteServerModalTitle = document.getElementById("confirmDeleteServerModalTitle");
+    const confirmDeleteServerModalBody = document.getElementById("confirmDeleteServerModalBody");
+    const confirmDeleteServerModalCancel = document.getElementById("confirmDeleteServerModalCancel");
+    const confirmDeleteServerModalConfirm = document.getElementById("confirmDeleteServerModalConfirm");
+    let currentGuildChannels = [];
+    let currentGuildRoles = [];
+    let currentGuildMembers = [];
+
+    function switchPage(page) {
+      const isSounds = page === "sounds";
+      pageSounds.classList.toggle("active", isSounds);
+      pageServer.classList.toggle("active", !isSounds);
+      navSounds.classList.toggle("active", isSounds);
+      navServer.classList.toggle("active", !isSounds);
+      if (!isSounds && guildSelect.options.length <= 1) loadGuilds();
+    }
+    navSounds.addEventListener("click", (e) => { e.preventDefault(); switchPage("sounds"); });
+    navServer.addEventListener("click", (e) => { e.preventDefault(); switchPage("server"); });
+
+    async function loadGuilds() {
+      guildSelect.innerHTML = "<option value=\"\">— Loading servers —</option>";
+      try {
+        const res = await apiFetch("/api/guilds");
+        const data = await res.json();
+        guildSelect.innerHTML = "<option value=\"\">— Select a server —</option>";
+        if (data.ok && data.guilds && data.guilds.length) {
+          data.guilds.forEach((g) => {
+            const opt = document.createElement("option");
+            opt.value = g.id;
+            opt.textContent = g.name + " (" + g.memberCount + " members)";
+            guildSelect.appendChild(opt);
+          });
+        } else if (!data.ok) {
+          guildSelect.innerHTML = "<option value=\"\">" + (data.error || "Failed to load") + "</option>";
+        }
+      } catch (e) {
+        guildSelect.innerHTML = "<option value=\"\">Bot API unavailable</option>";
+      }
+    }
+    async function loadGuildData(guildId) {
+      if (!guildId) {
+        createChannelSection.style.display = "none";
+        serverChannelsSection.style.display = "none";
+        if (serverRolesSection) serverRolesSection.style.display = "none";
+        serverMembersSection.style.display = "none";
+        serverLoadingSection.style.display = "block";
+        serverLoadingMsg.textContent = "Select a server above to view channels and members.";
+        return;
+      }
+      createChannelSection.style.display = "block";
+      serverLoadingSection.style.display = "block";
+      serverLoadingMsg.textContent = "Loading channels and members…";
+      serverChannelsSection.style.display = "none";
+      serverMembersSection.style.display = "none";
+      channelList.innerHTML = "<li class=\"loading\">Loading…</li>";
+      memberList.innerHTML = "<li class=\"loading\">Loading…</li>";
+      if (roleList) roleList.innerHTML = "<li class=\"loading\">Loading…</li>";
+      try {
+        const [chanRes, memRes, rolesRes] = await Promise.all([
+          apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/channels"),
+          apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/members"),
+          apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/roles"),
+        ]);
+        const chanData = await chanRes.json();
+        const memData = await memRes.json();
+        const rolesData = await rolesRes.json();
+        const channels = chanData.ok && chanData.channels ? chanData.channels : [];
+        const members = memData.ok && memData.members ? memData.members : [];
+        const roles = rolesData.ok && rolesData.roles ? rolesData.roles : [];
+        currentGuildChannels = channels;
+        currentGuildRoles = roles;
+        currentGuildMembers = members;
+
+        if (chanData.ok && chanData.channels) {
+          const categories = channels.filter((c) => c.type === 4).sort((a, b) => (a.position || 0) - (b.position || 0));
+          const uncategorized = channels.filter((c) => c.type !== 4 && !c.parentId).sort((a, b) => (a.position || 0) - (b.position || 0));
+          const itemHtml = (c) => "<li class=\"channel-item\" data-channel-id=\"" + escapeAttr(c.id) + "\"><span class=\"channel-type\">" + escapeHtml(c.typeName || "Channel") + "</span><span>" + escapeHtml(c.name) + "</span><span class=\"btn-wrap\"><button type=\"button\" class=\"btn-sm channel-edit-btn\" data-channel-id=\"" + escapeAttr(c.id) + "\">Edit</button><button type=\"button\" class=\"btn-sm danger channel-delete-btn\" data-channel-id=\"" + escapeAttr(c.id) + "\" data-channel-name=\"" + escapeAttr(c.name) + "\">Delete</button></span></li>";
+          const parts = [];
+          categories.forEach((cat) => {
+            parts.push("<li class=\"channel-category-header\">" + escapeHtml(cat.name) + "</li>");
+            channels.filter((c) => c.parentId === cat.id).sort((a, b) => (a.position || 0) - (b.position || 0)).forEach((c) => parts.push(itemHtml(c)));
+          });
+          if (uncategorized.length > 0) {
+            parts.push("<li class=\"channel-category-header\">Uncategorized</li>");
+            uncategorized.forEach((c) => parts.push(itemHtml(c)));
+          }
+          channelList.innerHTML = parts.length ? parts.join("") : "<li class=\"empty\">No channels</li>";
+          newChannelParent.innerHTML = "<option value=\"\">— None —</option>";
+          channels.filter((c) => c.type === 4).forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = c.name;
+            newChannelParent.appendChild(opt);
+          });
+        } else {
+          channelList.innerHTML = "<li class=\"empty\">" + (chanData.error || "Could not load channels") + "</li>";
+        }
+
+        if (rolesData.ok && roleList) {
+          roleList.innerHTML = roles.map((r) => {
+            const bg = (r.color && /^#[0-9a-fA-F]{6}$/.test(r.color)) ? r.color : "#6b7280";
+            return "<li class=\"role-item\" data-role-id=\"" + escapeAttr(r.id) + "\" data-role-position=\"" + r.position + "\"><span class=\"role-badge\" style=\"background:" + bg + ";color:#fff\">" + escapeHtml(r.name) + "</span><span style=\"color:var(--muted);font-size:0.85rem\">pos " + r.position + "</span><span class=\"btn-wrap\"><button type=\"button\" class=\"btn-sm role-up-btn\" data-role-id=\"" + escapeAttr(r.id) + "\" title=\"Move up\">▲</button><button type=\"button\" class=\"btn-sm role-down-btn\" data-role-id=\"" + escapeAttr(r.id) + "\" title=\"Move down\">▼</button><button type=\"button\" class=\"btn-sm role-edit-btn\" data-role-id=\"" + escapeAttr(r.id) + "\">Edit</button><button type=\"button\" class=\"btn-sm danger role-delete-btn\" data-role-id=\"" + escapeAttr(r.id) + "\" data-role-name=\"" + escapeAttr(r.name) + "\">Delete</button></span></li>";
+          }).join("") || "<li class=\"empty\">No roles (except @everyone)</li>";
+        } else if (roleList) {
+          roleList.innerHTML = "<li class=\"empty\">" + (rolesData.error || "Could not load roles") + "</li>";
+        }
+
+        if (memData.ok && memData.members) {
+          memberList.innerHTML = members.map((m) => {
+            const hasRoles = m.roles && m.roles.length;
+            const selectHtml = roles.length
+              ? "<select class=\"member-roles-select member-role-select\" data-member-id=\"" + escapeAttr(m.id) + "\"><option value=\"\">— Add/remove role —</option>" + roles.map((r) => {
+                const has = hasRoles && m.roles.some((mr) => mr.id === r.id);
+                return "<option value=\"" + escapeAttr(r.id) + "\" data-has=\"" + (has ? "1" : "0") + "\">" + (has ? "✓ " : "+ ") + escapeHtml(r.name) + "</option>";
+              }).join("") + "</select>" : "";
+            return "<li class=\"member-item\"><img class=\"member-avatar\" src=\"" + escapeAttr(m.avatar || "") + "\" alt=\"\" /><div style=\"flex:1\"><strong>" + escapeHtml(m.displayName || m.username) + "</strong><br /><span class=\"member-roles\">" + (hasRoles ? m.roles.map((r) => "<span class=\"role-badge\" style=\"background:var(--accent-muted);color:var(--accent)\">" + escapeHtml(r.name) + "</span>").join("") : "—") + "</span></div>" + (selectHtml ? "<span class=\"btn-wrap\">" + selectHtml + "</span>" : "") + "</li>";
+          }).join("") || "<li class=\"empty\">No members</li>";
+        } else {
+          memberList.innerHTML = "<li class=\"empty\">" + (memData.error || "Could not load members") + "</li>";
+        }
+        serverChannelsSection.style.display = "block";
+        if (serverRolesSection) serverRolesSection.style.display = "block";
+        serverMembersSection.style.display = "block";
+        serverLoadingSection.style.display = "none";
+      } catch (e) {
+        channelList.innerHTML = "<li class=\"empty\">Failed to load</li>";
+        memberList.innerHTML = "<li class=\"empty\">Failed to load</li>";
+        serverChannelsSection.style.display = "block";
+        serverMembersSection.style.display = "block";
+        serverLoadingSection.style.display = "none";
+      }
+    }
+    guildSelect.addEventListener("change", () => loadGuildData(guildSelect.value));
+
+    const refreshServerBtn = document.getElementById("refreshServerBtn");
+    if (refreshServerBtn) {
+      refreshServerBtn.addEventListener("click", () => {
+        const guildId = guildSelect.value;
+        if (!guildId) {
+          showToast("Select a server first.");
+          return;
+        }
+        loadGuildData(guildId);
+        showToast("Refreshing channels, roles, and members…");
+      });
+    }
+
+    const removeDuplicateChannelsBtn = document.getElementById("removeDuplicateChannelsBtn");
+    const removeDuplicatesValidation = document.getElementById("removeDuplicatesValidation");
+    if (removeDuplicateChannelsBtn) {
+      removeDuplicateChannelsBtn.addEventListener("click", async () => {
+        const guildId = guildSelect.value;
+        if (!guildId) {
+          if (removeDuplicatesValidation) { removeDuplicatesValidation.textContent = "Select a server first."; removeDuplicatesValidation.className = "validation error"; }
+          return;
+        }
+        removeDuplicateChannelsBtn.disabled = true;
+        if (removeDuplicatesValidation) { removeDuplicatesValidation.textContent = "Checking for duplicates…"; removeDuplicatesValidation.className = "validation"; }
+        try {
+          const res = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/channels");
+          const data = await res.json();
+          if (!data.ok || !data.channels) {
+            if (removeDuplicatesValidation) { removeDuplicatesValidation.textContent = data.error || "Could not load channels."; removeDuplicatesValidation.className = "validation error"; }
+            removeDuplicateChannelsBtn.disabled = false;
+            return;
+          }
+          const channels = data.channels;
+          const byKey = {};
+          channels.forEach((c) => {
+            const key = (c.name || "").trim().toLowerCase() + "|" + (c.parentId || "");
+            if (!byKey[key]) byKey[key] = [];
+            byKey[key].push(c);
+          });
+          const toDelete = [];
+          Object.keys(byKey).forEach((key) => {
+            const group = byKey[key];
+            if (group.length <= 1) return;
+            const sorted = group.slice().sort((a, b) => (a.position - b.position) || (a.id.localeCompare(b.id)));
+            sorted.slice(1).forEach((c) => toDelete.push(c));
+          });
+          if (toDelete.length === 0) {
+            if (removeDuplicatesValidation) { removeDuplicatesValidation.textContent = "No duplicate channels found."; removeDuplicatesValidation.className = "validation success"; }
+            removeDuplicateChannelsBtn.disabled = false;
+            showToast("No duplicate channels found.");
+            return;
+          }
+          if (removeDuplicatesValidation) { removeDuplicatesValidation.textContent = "Removing " + toDelete.length + " duplicate(s)…"; }
+          let deleted = 0;
+          let failed = 0;
+          for (const c of toDelete) {
+            try {
+              const delRes = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/channels/" + encodeURIComponent(c.id), { method: "DELETE" });
+              const delData = await delRes.json();
+              if (delData.ok) deleted++;
+              else failed++;
+            } catch (_) { failed++; }
+          }
+          if (removeDuplicatesValidation) {
+            removeDuplicatesValidation.textContent = "Removed " + deleted + " duplicate channel(s)." + (failed ? " " + failed + " failed." : "");
+            removeDuplicatesValidation.className = failed ? "validation error" : "validation success";
+          }
+          showToast("Removed " + deleted + " duplicate channel(s).");
+          loadGuildData(guildId);
+        } catch (e) {
+          if (removeDuplicatesValidation) { removeDuplicatesValidation.textContent = "Request failed. Is the bot running?"; removeDuplicatesValidation.className = "validation error"; }
+          showToast("Request failed.");
+        }
+        removeDuplicateChannelsBtn.disabled = false;
+      });
+    }
+
+    createDefaultLayoutBtn.addEventListener("click", async () => {
+      const guildId = guildSelect.value;
+      if (!guildId) {
+        if (createDefaultValidation) { createDefaultValidation.textContent = "Select a server first."; createDefaultValidation.className = "validation error"; }
+        return;
+      }
+      if (createDefaultValidation) { createDefaultValidation.textContent = ""; }
+      createDefaultLayoutBtn.disabled = true;
+      createDefaultLayoutBtn.textContent = "Creating…";
+      try {
+        const res = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/channels/create-default", { method: "POST" });
+        const data = await res.json();
+        if (data.ok) {
+          if (createDefaultValidation) { createDefaultValidation.textContent = "Created " + (data.created || 0) + " channels."; createDefaultValidation.className = "validation success"; }
+          showToast("Default layout created: " + (data.created || 0) + " channels.");
+          loadGuildData(guildId);
+        } else {
+          const errMsg = data.error || "Failed.";
+          if (createDefaultValidation) { createDefaultValidation.textContent = errMsg; createDefaultValidation.className = "validation error"; }
+          showToast(errMsg.replace(/\*\*/g, ""));
+        }
+      } catch (e) {
+        if (createDefaultValidation) { createDefaultValidation.textContent = "Request failed. Is the bot running?"; createDefaultValidation.className = "validation error"; }
+      }
+      createDefaultLayoutBtn.disabled = false;
+      createDefaultLayoutBtn.textContent = "Create default layout";
+    });
+
+    createChannelBtn.addEventListener("click", async () => {
+      const guildId = guildSelect.value;
+      if (!guildId) {
+        createChannelValidation.textContent = "Select a server first.";
+        createChannelValidation.className = "validation error";
+        return;
+      }
+      const name = (newChannelName && newChannelName.value || "").trim();
+      if (!name) {
+        createChannelValidation.textContent = "Enter a channel name.";
+        createChannelValidation.className = "validation error";
+        return;
+      }
+      createChannelValidation.textContent = "";
+      createChannelBtn.disabled = true;
+      try {
+        const res = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/channels", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            emoji: (newChannelEmoji && newChannelEmoji.value || "").trim(),
+            type: (newChannelType && newChannelType.value) || "text",
+            parentId: (newChannelParent && newChannelParent.value) || null,
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          if (newChannelName) newChannelName.value = "";
+          if (newChannelEmoji) newChannelEmoji.value = "";
+          createChannelValidation.textContent = "Created: " + (data.channel && data.channel.name) + ".";
+          createChannelValidation.className = "validation success";
+          loadGuildData(guildId);
+          showToast("Channel created: " + (data.channel && data.channel.name));
+        } else {
+          createChannelValidation.textContent = data.error || "Failed to create channel.";
+          createChannelValidation.className = "validation error";
+        }
+      } catch (e) {
+        createChannelValidation.textContent = "Request failed. Is the bot running?";
+        createChannelValidation.className = "validation error";
+      }
+      createChannelBtn.disabled = false;
+    });
+
+    channelList.addEventListener("click", (e) => {
+      const guildId = guildSelect.value;
+      if (!guildId) return;
+      const editBtn = e.target.closest(".channel-edit-btn");
+      const delBtn = e.target.closest(".channel-delete-btn");
+      if (editBtn) {
+        const cid = editBtn.getAttribute("data-channel-id");
+        const ch = currentGuildChannels.find((c) => c.id === cid);
+        if (!ch) return;
+        editChannelName.value = ch.name || "";
+        editChannelPosition.value = ch.position != null ? ch.position : 0;
+        editChannelTopic.value = ch.topic || "";
+        editChannelNsfw.checked = !!ch.nsfw;
+        editChannelSlowmode.value = ch.rateLimitPerUser != null ? ch.rateLimitPerUser : 0;
+        editChannelBitrate.value = ch.bitrate != null ? ch.bitrate : 64000;
+        editChannelUserLimit.value = ch.userLimit != null ? ch.userLimit : 0;
+        editChannelParent.innerHTML = "<option value=\"\">— None —</option>";
+        currentGuildChannels.filter((c) => c.type === 4).forEach((c) => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.textContent = c.name;
+          opt.selected = c.id === ch.parentId;
+          editChannelParent.appendChild(opt);
+        });
+        const isTextOrAnnouncement = ch.type === 0 || ch.type === 5;
+        const isVoice = ch.type === 2;
+        editChannelTopicRow.style.display = isTextOrAnnouncement ? "" : "none";
+        editChannelNsfwRow.style.display = isTextOrAnnouncement ? "" : "none";
+        editChannelSlowmodeRow.style.display = isTextOrAnnouncement ? "" : "none";
+        editChannelBitrateRow.style.display = isVoice ? "" : "none";
+        editChannelUserLimitRow.style.display = isVoice ? "" : "none";
+        editChannelModal.dataset.guildId = guildId;
+        editChannelModal.dataset.channelId = cid;
+        editChannelModal.dataset.channelName = ch.name || "";
+        editChannelModal.dataset.channelType = String(ch.type);
+        editChannelModal.classList.add("show");
+      } else if (delBtn) {
+        const cid = delBtn.getAttribute("data-channel-id");
+        const cname = delBtn.getAttribute("data-channel-name") || "this channel";
+        confirmDeleteServerModalTitle.textContent = "Delete channel?";
+        confirmDeleteServerModalBody.textContent = "Permanently delete \"" + cname + "\"? This cannot be undone.";
+        confirmDeleteServerModal.dataset.action = "delete-channel";
+        confirmDeleteServerModal.dataset.guildId = guildId;
+        confirmDeleteServerModal.dataset.id = cid;
+        confirmDeleteServerModal.classList.add("show");
+      }
+    });
+    editChannelModalCancel.addEventListener("click", () => editChannelModal.classList.remove("show"));
+    editChannelModalConfirm.addEventListener("click", async () => {
+      const guildId = editChannelModal.dataset.guildId;
+      const channelId = editChannelModal.dataset.channelId;
+      if (!guildId || !channelId) return;
+      const name = (editChannelName.value || "").trim();
+      const parentId = (editChannelParent.value || "").trim() || null;
+      const position = parseInt(editChannelPosition.value, 10);
+      const topic = (editChannelTopic.value || "").trim();
+      const nsfw = editChannelNsfw.checked;
+      const rateLimitPerUser = parseInt(editChannelSlowmode.value, 10);
+      const bitrate = parseInt(editChannelBitrate.value, 10);
+      const userLimit = parseInt(editChannelUserLimit.value, 10);
+      const channelType = editChannelModal.dataset.channelType;
+      const isTextOrAnnouncement = channelType === "0" || channelType === "5";
+      const isVoice = channelType === "2";
+      const body = {
+        name: name || undefined,
+        parentId: parentId || undefined,
+        position: isNaN(position) ? undefined : position,
+      };
+      if (isTextOrAnnouncement) {
+        body.topic = topic || null;
+        body.nsfw = nsfw;
+        body.rateLimitPerUser = isNaN(rateLimitPerUser) ? undefined : Math.max(0, Math.min(21600, rateLimitPerUser));
+      }
+      if (isVoice) {
+        body.bitrate = isNaN(bitrate) ? undefined : Math.max(8000, Math.min(384000, bitrate));
+        body.userLimit = isNaN(userLimit) ? undefined : Math.max(0, Math.min(99, userLimit));
+      }
+      try {
+        const res = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/channels/" + encodeURIComponent(channelId), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          editChannelModal.classList.remove("show");
+          showToast("Channel updated.");
+          loadGuildData(guildId);
+        } else {
+          showToast(data.error || "Failed to update channel.");
+        }
+      } catch (err) {
+        showToast("Request failed.");
+      }
+    });
+    editChannelModalDelete.addEventListener("click", () => {
+      const guildId = editChannelModal.dataset.guildId;
+      const channelId = editChannelModal.dataset.channelId;
+      const channelName = editChannelModal.dataset.channelName || "this channel";
+      if (!guildId || !channelId) return;
+      editChannelModal.classList.remove("show");
+      confirmDeleteServerModalTitle.textContent = "Delete channel?";
+      confirmDeleteServerModalBody.textContent = "Permanently delete \"" + channelName + "\"? This cannot be undone.";
+      confirmDeleteServerModal.dataset.action = "delete-channel";
+      confirmDeleteServerModal.dataset.guildId = guildId;
+      confirmDeleteServerModal.dataset.id = channelId;
+      confirmDeleteServerModal.classList.add("show");
+    });
+    confirmDeleteServerModalCancel.addEventListener("click", () => {
+      confirmDeleteServerModal.classList.remove("show");
+      delete confirmDeleteServerModal.dataset.action;
+      delete confirmDeleteServerModal.dataset.guildId;
+      delete confirmDeleteServerModal.dataset.id;
+    });
+    confirmDeleteServerModalConfirm.addEventListener("click", async () => {
+      const action = confirmDeleteServerModal.dataset.action;
+      const guildId = confirmDeleteServerModal.dataset.guildId;
+      const id = confirmDeleteServerModal.dataset.id;
+      if (!guildId || !id) return;
+      try {
+        if (action === "delete-channel") {
+          const res = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/channels/" + encodeURIComponent(id), { method: "DELETE" });
+          const data = await res.json();
+          if (data.ok) {
+            confirmDeleteServerModal.classList.remove("show");
+            showToast("Channel deleted.");
+            loadGuildData(guildId);
+          } else showToast(data.error || "Failed to delete.");
+        } else if (action === "delete-role") {
+          const res = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/roles/" + encodeURIComponent(id), { method: "DELETE" });
+          const data = await res.json();
+          if (data.ok) {
+            confirmDeleteServerModal.classList.remove("show");
+            showToast("Role deleted.");
+            loadGuildData(guildId);
+          } else showToast(data.error || "Failed to delete.");
+        }
+      } catch (err) {
+        showToast("Request failed.");
+      }
+    });
+
+    roleList.addEventListener("click", async (e) => {
+      const guildId = guildSelect.value;
+      if (!guildId) return;
+      const upBtn = e.target.closest(".role-up-btn");
+      const downBtn = e.target.closest(".role-down-btn");
+      const editBtn = e.target.closest(".role-edit-btn");
+      const delBtn = e.target.closest(".role-delete-btn");
+      if (upBtn || downBtn) {
+        const rid = (upBtn || downBtn).getAttribute("data-role-id");
+        const role = currentGuildRoles.find((r) => r.id === rid);
+        if (!role) return;
+        const delta = upBtn ? 1 : -1;
+        const newPos = Math.max(0, (role.position || 0) + delta);
+        try {
+          const res = await apiFetch("/api/guilds/" + encodeURIComponent(guildId) + "/roles/" + encodeURIComponent(rid), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ position: newPos }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            showToast("Role position updated.");
+            loadGuildData(guildId);
+          } else showToast(data.error || "Failed.");
+        } catch (err) {
+          showToast("Request failed.");
+        }
+        return;
+      }
+      if (editBtn) {
+        const rid = editBtn.getAttribute("data-role-id");
+        const role = currentGuildRoles.find((r) => r.id === rid);
+        if (!role) return;
+        editRoleModalTitle.textContent = "Edit role";
+        editRoleName.value = role.name;
+        editRoleColor.value = role.color || "#ffffff";
+        editRolePosition.value = role.position != null ? role.position : 0;
+        editRoleModal.dataset.guildId = guildId;
+        editRoleModal.dataset.roleId = rid;
+        editRoleModal.classList.add("show");
+      } else if (delBtn) {
+        const rid = delBtn.getAttribute("data-role-id");
+        const rname = delBtn.getAttribute("data-role-name") || "this role";
+        confirmDeleteServerModalTitle.textContent = "Delete role?";
+        confirmDeleteServerModalBody.textContent = "Permanently delete role \"" + rname + "\"? This cannot be undone.";
+        confirmDeleteServerModal.dataset.action = "delete-role";
+        confirmDeleteServerModal.dataset.guildId = guildId;
+        confirmDeleteServerModal.dataset.id = rid;
+        confirmDeleteServerModal.classList.add("show");
+      }
+    });
+    editRoleModalCancel.addEventListener("click", () => editRoleModal.classList.remove("show"));
+    editRoleModalConfirm.addEventListener("click", async () => {
+      const guildId = editRoleModal.dataset.guildId;
+      const roleId = editRoleModal.dataset.roleId;
+      if (!guildId) return;
+      const name = (editRoleName.value || "").trim();
+      const colorStr = (editRoleColor.value || "").trim();
+      const color = /^#[0-9a-fA-F]{6}$/.test(colorStr) ? parseInt(colorStr.slice(1), 16) : null;
+      const position = parseInt(editRolePosition.value, 10);
+      const body = { name: name || undefined, color: color != null ? color : undefined, position: isNaN(position) ? undefined : position };
+      try {
+        const url = "/api/guilds/" + encodeURIComponent(guildId) + (roleId ? "/roles/" + encodeURIComponent(roleId) : "/roles");
+        const method = roleId ? "PATCH" : "POST";
+        const res = await apiFetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(roleId ? body : { name: name || "new role", color: color != null ? color : 0 }) });
+        const data = await res.json();
+        if (data.ok) {
+          editRoleModal.classList.remove("show");
+          delete editRoleModal.dataset.roleId;
+          showToast(roleId ? "Role updated." : "Role created.");
+          loadGuildData(guildId);
+        } else showToast(data.error || "Failed.");
+      } catch (err) {
+        showToast("Request failed.");
+      }
+    });
+    createRoleBtn.addEventListener("click", () => {
+      if (!guildSelect.value) {
+        createRoleValidation.textContent = "Select a server first.";
+        createRoleValidation.className = "validation error";
+        return;
+      }
+      createRoleValidation.textContent = "";
+      editRoleModalTitle.textContent = "Create role";
+      editRoleName.value = "";
+      editRoleColor.value = "#99aab5";
+      editRolePosition.value = "0";
+      editRoleModal.dataset.guildId = guildSelect.value;
+      delete editRoleModal.dataset.roleId;
+      editRoleModal.classList.add("show");
+    });
+
+    memberList.addEventListener("change", async (e) => {
+      const sel = e.target.closest(".member-role-select");
+      if (!sel || !sel.value) return;
+      const guildId = guildSelect.value;
+      const memberId = sel.getAttribute("data-member-id");
+      const roleId = sel.value;
+      const opt = sel.options[sel.selectedIndex];
+      const has = opt && opt.getAttribute("data-has") === "1";
+      try {
+        const url = "/api/guilds/" + encodeURIComponent(guildId) + "/members/" + encodeURIComponent(memberId) + "/roles/" + encodeURIComponent(roleId);
+        const res = has
+          ? await apiFetch(url, { method: "DELETE" })
+          : await apiFetch(url, { method: "PUT" });
+        const data = await res.json();
+        if (data.ok) {
+          showToast(has ? "Role removed." : "Role added.");
+          loadGuildData(guildId);
+        } else showToast(data.error || "Failed.");
+      } catch (err) {
+        showToast("Request failed.");
+      }
+      sel.value = "";
+    });
+
     loadSounds();
     loadCommands();
+    loadStats();
+
+    // Auto-refresh when server restarts (after deploy) so you see updates without manual refresh
+    let lastServerStartTime = null;
+    setInterval(async () => {
+      try {
+        const res = await fetch("/api/health");
+        const data = await res.json();
+        const start = data.startTime;
+        if (start != null) {
+          if (lastServerStartTime != null && start !== lastServerStartTime) {
+            location.reload();
+            return;
+          }
+          lastServerStartTime = start;
+        }
+      } catch (_) {}
+    }, 45000);
   </script>
 </body>
 </html>
